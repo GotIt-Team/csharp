@@ -2,7 +2,7 @@
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Qalam.Common.Helper
+namespace GotIt.Common.Helper
 {
     public static class Protected
     {

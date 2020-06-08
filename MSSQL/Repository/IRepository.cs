@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GotIt.Common.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,7 +16,7 @@ namespace GotIt.MSSQL.Repository
         // get list
         List<TEntity> GetAll(Expression<Func<TEntity, bool>> condition, params string[] includes);
         // get paginated
-        List<TEntity> GetAllPaginated(Expression<Func<TEntity, bool>> condition, int pageNo, int pageSize, params string[] includes);
+        PageResult<List<TEntity>> GetAllPaginated(Expression<Func<TEntity, bool>> condition, int pageNo, int pageSize, params string[] includes);
         // add
         TEntity Add(TEntity entity);
         // add list

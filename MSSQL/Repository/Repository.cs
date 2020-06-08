@@ -1,4 +1,5 @@
 ﻿using GotIt.Common.Extentions;
+using GotIt.Common.Helper;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -70,10 +71,12 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public List<TEntity> GetAllPaginated(Expression<Func<TEntity, bool>> condition, int pageNo, int pageSize, params string[] includes)
+        public PageResult<List<TEntity>> GetAllPaginated(Expression<Func<TEntity, bool>> condition, int pageNo, int pageSize, params string[] includes)
         {
             try
             {
+                pageNo = pageNo <= 0 ? 1 : pageNo;
+                pageSize = pageSize <= 0 ? 10 : pageSize;
                 var skip = (pageNo - 1) * pageSize;
                 var result = _dbSet.Where(condition);
                 var count = result.Count();
@@ -83,7 +86,11 @@ namespace GotIt.MSSQL.Repository
                     result = result.IncludeMultiple(includes);
                 }
 
-                return result.Skip(skip).Take(pageSize).AsNoTracking().ToList();
+                return new PageResult<List<TEntity>>
+                {
+                    Data = result.Skip(skip).Take(pageSize).AsNoTracking().ToList(), 
+                    Count = count
+                };
             }
             catch (Exception e)
             {
