@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GotIt.Common.Enums
 {
-    public enum EStateusCode : Int32
+    public enum EStatusCode : Int32
     {
         [Description("Process Done Successfully")]
         ProcessSuccess = 1,
@@ -34,13 +34,9 @@ namespace GotIt.Common.Enums
         UserNotExist = 12,
         [Description("This Data is Duplicated")]
         DuplicateData = 13,
-        [Description("Username already exists")]
-        UserNameExists = 14,
         [Description("Email already exists")]
-        EmailExists = 15,
-        [Description("Username & Email already exists")]
-        UserNameEmailExists = 16,
+        EmailExists = 14,
         [Description("Stream Key isn't valid or live doesn't started yet")]
-        InValidStreamKey = 17,
+        InValidStreamKey = 15,
     }
 }

@@ -10,6 +10,5 @@ namespace GotIt.Common.Enums
     {
         male = 1,
         female = 2,
-
     }
 }

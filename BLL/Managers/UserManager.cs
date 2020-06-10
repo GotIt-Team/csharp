@@ -22,7 +22,15 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var user = new UserEntity{ Name = userViewModel.FirstName + " " + userViewModel.LastName };
+                var user = new UserEntity{ 
+                    Name = userViewModel.FirstName + " " + userViewModel.LastName ,
+                    Email=userViewModel.Email,
+                    PhoneNumber = userViewModel.PhoneNumber,
+                    City = userViewModel.City,
+                    Type = userViewModel.Type,
+                    Country = userViewModel.Country,
+                    Gender = userViewModel.Gender,
+                };
                 
                 // Check for Type
                 if (!Enum.IsDefined(typeof(EUserType), userViewModel.Type))
@@ -38,10 +46,6 @@ namespace GotIt.BLL.Managers
                     return ResultHelper.Failed<TokenViewModel>(data: null, count : null );
                 }
 
-                if (ExistUser(user.Email, out EStateusCode errors))
-                {
-                    return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: errors.ToString());
-                }
                 // Hash user password
                 user.HashPassword = Protected.CreatePasswordHash(userViewModel.Password);
                 user.IsConfirmed = true;
@@ -63,12 +67,11 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<TokenViewModel>(data: null, count:null , message: e.Message);
             }
         }
-
         public Result<TokenViewModel> Login(UserLoginViewModel user)
         {
             try
             {
-                var userResult = Get(u => u.Email == user.Email.ToUpper(), new string[] { "Teacher", "Student", "Roles.Role" });
+                var userResult = Get(u => u.Email == user.Email);
 
                 if (userResult == null)
                 {
@@ -91,43 +94,5 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: e.Message);
             }
         }
-        private bool ExistUser(string email, out EStateusCode errors)
-        {
-            bool result = false;
-            errors = EStateusCode.InvalidData;
-            // Check if email exist
-            var emailResult = ExistEmail(email);
-            if (emailResult.IsSucceeded && emailResult.Data)
-            {
-                errors = result ? EStateusCode.UserNameEmailExists : EStateusCode.EmailExists;
-            }
-            result |= (!emailResult.IsSucceeded || emailResult.Data);
-
-            return result;
-        }
-        public Result<bool> ExistEmail(string email)
-        {
-            try
-            {
-                var addr = new MailAddress(email);
-                if (addr.Address != email)
-                {
-                    return ResultHelper.Failed(data: false, count: null);
-                }
-
-                var emailResult = Any(u => u.Email == email);
-                if (!emailResult.IsSucceeded)
-                {
-                    return ResultHelper.Failed(data: false, count: null);
-                }
-
-                return emailResult;
-            }
-            catch (Exception e)
-            {
-                return ResultHelper.Failed(data: false, count : null , message: e.Message);
-            }
-        }
-
     }
 }

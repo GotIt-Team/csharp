@@ -57,7 +57,7 @@ namespace GotIt.BLL.Managers
                 var token = new JwtSecurityToken(
                     issuer: "GotIt",
                     audience: "GotIt-Users",
-                    expires: DateTime.Now.AddDays(1),
+                    expires: DateTime.Now.AddYears(1),
                     signingCredentials: signingCredentials,
                     claims: claims
                 );
@@ -71,12 +71,12 @@ namespace GotIt.BLL.Managers
                 };
 
                 //return token
-                return ResultHelper.Succeeded(data: resultToken, count: 1, message: EStateusCode.ProcessSuccess.ToString());
+                return ResultHelper.Succeeded(data: resultToken, count: 1, message: EStatusCode.ProcessSuccess.ToString());
             }
             // any un excpected error happened
             catch (Exception e)
             {
-                return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: EStateusCode.GenerateTokenFaild.ToString());
+                return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: EStatusCode.GenerateTokenFaild.ToString());
             }
         }
     }

@@ -65,7 +65,10 @@ namespace GotIt.MSSQL
                  .WithMany(p => p.Comments)
                  .OnDelete(DeleteBehavior.NoAction);
             });
-
+            modelBuilder.Entity<UserEntity>(e=>
+            {
+                e.HasIndex(m => m.Email).IsUnique();
+            });
             base.OnModelCreating(modelBuilder);
         }
     }

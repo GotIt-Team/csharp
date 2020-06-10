@@ -37,10 +37,5 @@ namespace GotIt.MSSQL.Models
         public virtual ICollection<MessageEntity> Messages { get; set; }
         public virtual ICollection<NotificationEntity> Notifications { get; set; }
         public virtual ICollection<UserChatEntity> Chats { get; set; }
-
-
-
-
-
     }
 }
