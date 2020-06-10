@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GotIt.BLL.Managers;
+using GotIt.BLL.ViewModels;
 using GotIt.Common.Enums;
 using GotIt.Common.GlobalFilters;
 using GotIt.Common.Helper;
@@ -12,10 +14,13 @@ namespace GotIt.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class UserController : ControllerBase
     {
-        public UserController()
+        private readonly UserManager _userManager;
+        public UserController(UserManager userManager)
         {
+            _userManager = userManager;
         }
 
         [HttpPost]
@@ -27,9 +32,9 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("sign-up")]
-        public Result<object> Registration()
+        public Result<TokenViewModel> Registration([FromBody] RegisterationViewModel newUser)
         {
-            throw new NotImplementedException();
+            return _userManager.AddUser(newUser);
         }
 
         [HttpGet]

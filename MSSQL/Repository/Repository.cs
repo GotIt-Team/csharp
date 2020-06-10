@@ -206,7 +206,19 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
+        public Result<bool> Any(Expression<Func<TEntity, bool>> predicate)
+        {
+            try
+            {
+                var result = _dbSet.Any(predicate);
 
+                return ResultHelper.Succeeded(data: result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed(data: false, count:null, message: e.Message);
+            }
+        }
         public int SaveChanges()
         {
             try

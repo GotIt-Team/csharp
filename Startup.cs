@@ -44,8 +44,9 @@ namespace GotIt
             services.AddScoped(typeof(PersonManager));
             services.AddScoped(typeof(RequestManager));
             services.AddScoped(typeof(UserManager));
+            services.AddScoped(typeof(TokenManager));
 
-            services.AddDbContext<GotItDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local-Abdalrahman"]));
+            services.AddDbContext<GotItDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local-Hassan"]));
             #endregion
 
         }
