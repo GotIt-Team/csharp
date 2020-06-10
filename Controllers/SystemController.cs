@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GotIt.BLL.Managers;
+using GotIt.BLL.ViewModels;
 using GotIt.Common.Helper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,17 +15,18 @@ namespace GotIt.Controllers
     [ApiController]
     public class SystemController : ControllerBase
     {
-        public SystemController()
+        private readonly FeedbackManager _feedbackManager;
+        public SystemController(FeedbackManager feedbackManager)
         {
+            _feedbackManager = feedbackManager;
         }
 
         [HttpPost]
         [Route("feedback")]
-        public Result<object> Feedback()
+        public Result<bool> Feedback(FeedbackViewModel feedbackViewModel)
         {
-            throw new NotImplementedException();
+            return _feedbackManager.AddFeedback(feedbackViewModel, 1);
         }
-
         [HttpPost]
         [Route("contact-us")]
         public Result<object> ContactUs()
