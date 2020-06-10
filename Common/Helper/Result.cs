@@ -9,35 +9,18 @@ namespace GotIt.Common.Helper
 {
     public class Result<TData>
     {
-        [Obsolete("Result<TData>.Succeeded is deprecated, please use ResultHelper.Succeeded<TData> instead.")]
-        public static Result<TData> Succeeded(TData data, int? count = null, string message = "Process done successfuly")
+        public Result(TData data, int? count, string message, bool isSucceeded)
         {
-            return new Result<TData>
-            {
-                IsSucceeded = true,
-                Message = message,
-                Data = data,
-                Count = count
-            };
+            Data = data;
+            Count = count;
+            Message = message;
+            IsSucceeded = isSucceeded;
         }
 
-
-        [Obsolete("Result<TData>.Failed is deprecated, please use ResultHelper.Failed<TData> instead.")]
-        public static Result<TData> Failed(TData data, int? count = null, string message = "Process Failed!")
-        {
-            return new Result<TData>
-            {
-                IsSucceeded = false,
-                Message = message,
-                Data = data,
-                Count = count
-            };
-        }
-
-        public TData Data { get; set; }
-        public int? Count { get; set; }
-        public bool IsSucceeded { get; set; }
-        public string Message { get; set; }
+        public TData Data { get; private set; }
+        public int? Count { get; private set; }
+        public bool IsSucceeded { get; private set; }
+        public string Message { get; private set; }
     }
 
     public class PageResult<TData>
@@ -48,26 +31,14 @@ namespace GotIt.Common.Helper
 
     static class ResultHelper
     {
-        public static Result<TData> Succeeded<TData>(TData data, int? count = null, string message = "Process done successfuly")
+        public static Result<TData> Succeeded<TData>(TData data = default, int? count = null, string message = "Process done successfuly")
         {
-            return new Result<TData>
-            {
-                IsSucceeded = true,
-                Message = message,
-                Data = data,
-                Count = count
-            };
+            return new Result<TData>(data, count, message, true);
         }
 
-        public static Result<TData> Failed<TData>(TData data, int? count = null, string message = "Process Failed!")
+        public static Result<TData> Failed<TData>(TData data = default, int? count = null, string message = "Process Failed!")
         {
-            return new Result<TData>
-            {
-                IsSucceeded = false,
-                Message = message,
-                Data = data,
-                Count = count
-            };
+            return new Result<TData>(data, count, message, false);
         }
     }
 }

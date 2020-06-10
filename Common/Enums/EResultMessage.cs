@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GotIt.Common.Enums
 {
-    public enum EStatusCode : Int32
+    public enum EResultMessage
     {
         [Description("Process Done Successfully")]
         ProcessSuccess = 1,
@@ -24,19 +24,21 @@ namespace GotIt.Common.Enums
         MissedData = 7,
         [Description("Invalid data")]
         InvalidData = 8,
-        [Description("Repeated data")]
-        RepeatedData = 9,
         [Description("Database case an error")]
         DatabaseError = 10,
         [Description("Faild to generate token")]
         GenerateTokenFaild = 11,
-        [Description("User not exist or not active")]
-        UserNotExist = 12,
         [Description("This Data is Duplicated")]
         DuplicateData = 13,
         [Description("Email already exists")]
         EmailExists = 14,
-        [Description("Stream Key isn't valid or live doesn't started yet")]
-        InValidStreamKey = 15,
+        [Description("Email or password is wrong")]
+        EmailOrPasswordWrong = 15,
+        [Description("User account not confirmed")]
+        UserNotConfirmed = 16,
+        [Description("Password and repeated password not matched")]
+        PasswordNotMatched = 16,
+        [Description("User type is wrong")]
+        NotUserType = 16,
     }
 }

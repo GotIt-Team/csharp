@@ -44,7 +44,10 @@ namespace GotIt.Common.GlobalFilters
                 var data = ValidateToken(token); 
 
                 var userId = data.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+                var name = data.Claims.FirstOrDefault(c => c.Type == "Name")?.Value;
+                var email = data.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
                 var type = data.Claims.FirstOrDefault(c => c.Type == "Type")?.Value;
+
                 var userType = (EUserType)Enum.Parse(typeof(EUserType), type);
                 if (!_userTypes.Contains(userType))
                 {
@@ -52,6 +55,8 @@ namespace GotIt.Common.GlobalFilters
                 }
 
                 _requestAttributes.Id = int.Parse(userId);
+                _requestAttributes.Name = name;
+                _requestAttributes.Email = email;
                 _requestAttributes.Type = userType;
             }
             catch (Exception)

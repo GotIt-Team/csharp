@@ -19,6 +19,6 @@ namespace GotIt.MSSQL.Models
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public virtual ItemEntity Item { get; set; }
-        public virtual ICollection< ObjectColorEntity> Colors{ get; set; }
+        public virtual ICollection<ObjectColorEntity> Colors{ get; set; }
     }
 }

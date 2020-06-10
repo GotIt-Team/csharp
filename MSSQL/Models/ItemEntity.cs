@@ -19,9 +19,9 @@ namespace GotIt.MSSQL.Models
         [Required]
         public  bool IsLost { get; set; }
         public string Content { get; set; }
-        public DateTime MatchDate  { get; set; }
         [Required]
         public EItemType Type { get; set; }
+        public DateTime? MatchDate { get; set; }
         [ForeignKey("MatchedItem")]     
         public int? MatchedItemId { get; set; }
         public virtual ItemEntity MatchedItem { get; set; }

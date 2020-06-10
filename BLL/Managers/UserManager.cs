@@ -1,5 +1,6 @@
 ﻿using GotIt.BLL.ViewModels;
 using GotIt.Common.Enums;
+using GotIt.Common.Exceptions;
 using GotIt.Common.Helper;
 using GotIt.MSSQL;
 using GotIt.MSSQL.Models;
@@ -17,17 +18,23 @@ namespace GotIt.BLL.Managers
     public class UserManager : Repository<UserEntity>
     {
         private readonly TokenManager _tokenManager;
-        public UserManager(GotItDbContext dbContext, TokenManager tokenManager) : base(dbContext)  { _tokenManager = tokenManager; }
+        
+        public UserManager(GotItDbContext dbContext, TokenManager tokenManager) : base(dbContext)
+        {
+            _tokenManager = tokenManager;
+        }
+        
         public Result<TokenViewModel> AddUser(RegisterationViewModel userViewModel)
         {
             try
             {
-                var user = new UserEntity{ 
-                    Name = userViewModel.FirstName + " " + userViewModel.LastName ,
-                    Email=userViewModel.Email,
+                var user = new UserEntity {
+                    Name = userViewModel.Name,
+                    Email = userViewModel.Email,
                     PhoneNumber = userViewModel.PhoneNumber,
                     City = userViewModel.City,
                     Type = userViewModel.Type,
+                    Picture = userViewModel.Picture,
                     Country = userViewModel.Country,
                     Gender = userViewModel.Gender,
                 };
@@ -35,7 +42,7 @@ namespace GotIt.BLL.Managers
                 // Check for Type
                 if (!Enum.IsDefined(typeof(EUserType), userViewModel.Type))
                 {
-                    return  ResultHelper.Failed<TokenViewModel>(data: null, count : null);
+                    throw new Exception(EResultMessage.NotUserType.ToString());
                 }
 
                 // Add user Typr
@@ -43,7 +50,7 @@ namespace GotIt.BLL.Managers
 
                 if (userViewModel.Password != userViewModel.RepeatPassword)
                 {
-                    return ResultHelper.Failed<TokenViewModel>(data: null, count : null );
+                    throw new Exception(EResultMessage.PasswordNotMatched.ToString());
                 }
 
                 // Hash user password
@@ -55,43 +62,48 @@ namespace GotIt.BLL.Managers
 
                 if (result == null)
                 {
-                    return ResultHelper.Failed<TokenViewModel > (data: null, count : null);
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
                 SaveChanges();
 
                 return _tokenManager.GenerateUserToken(result);
             }
+            catch (DuplicateDataException)
+            {
+                return ResultHelper.Failed<TokenViewModel>(message: EResultMessage.EmailExists.ToString());
+            }
             catch (Exception e)
             {
-                return ResultHelper.Failed<TokenViewModel>(data: null, count:null , message: e.Message);
+                return ResultHelper.Failed<TokenViewModel>(message: e.Message);
             }
         }
+
         public Result<TokenViewModel> Login(UserLoginViewModel user)
         {
             try
             {
-                var userResult = Get(u => u.Email == user.Email);
+                var userResult = Get(u => u.Email.ToUpper() == user.Email.ToUpper());
 
                 if (userResult == null)
                 {
-                    return ResultHelper.Failed<TokenViewModel>(data: null, count:null,  message: "Email or Password is wrong");
+                    throw new Exception(EResultMessage.EmailOrPasswordWrong.ToString());
                 }
                 if (!userResult.IsConfirmed)
                 {
-                    return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: "Email isn't confirmed");
+                    throw new Exception(EResultMessage.UserNotConfirmed.ToString());
                 }
                 
                 if (!Protected.Validate(user.Password, userResult.HashPassword))
                 {
-                    return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: "Email or Password is wrong");
+                    throw new Exception(EResultMessage.EmailOrPasswordWrong.ToString());
                 }
 
                 return _tokenManager.GenerateUserToken(userResult);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<TokenViewModel>(data: null, count:null, message: e.Message);
+                return ResultHelper.Failed<TokenViewModel>(message: e.Message);
             }
         }
     }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GotIt.BLL.Managers;
 using GotIt.BLL.ViewModels;
+using GotIt.Common.Enums;
+using GotIt.Common.GlobalFilters;
 using GotIt.Common.Helper;
 using GotIt.MSSQL.Models;
 using Microsoft.AspNetCore.Http;
@@ -17,10 +19,10 @@ namespace GotIt.Controllers
     {
         private readonly NotificationManager _notificationManager;
         private readonly RequestAttributes _requestAttributes;
-        public NotificationController(NotificationManager notificationManager, RequestAttributes requestAttributes)
+        public NotificationController(RequestAttributes requestAttributes, NotificationManager notificationManager)
         {
-            _notificationManager = notificationManager;
             _requestAttributes = requestAttributes;
+            _notificationManager = notificationManager;
         }
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace GotIt.Controllers
         /// <param name="pageSize">number of items on the page</param>
         /// <returns></returns>
         [HttpGet]
+        [Authrization(EUserType.regular)]
         public Result<List<NotificationViewModel>> GetNotifications([FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _notificationManager.GetUserNotifications(_requestAttributes.Id, pageNo, pageSize);
@@ -43,6 +46,7 @@ namespace GotIt.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("{id}/read")]
+        [Authrization(EUserType.regular)]
         public Result<bool> ReadNotification([FromRoute] int id, [FromBody] NotificationViewModel notification)
         {
             return _notificationManager.ReadNotification(_requestAttributes.Id, id, notification);

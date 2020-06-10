@@ -15,9 +15,12 @@ namespace GotIt.Controllers
     [ApiController]
     public class SystemController : ControllerBase
     {
-        private readonly FeedbackManager _feedbackManager;
-        public SystemController(FeedbackManager feedbackManager)
+        private readonly SystemManager _feedbackManager;
+        private readonly RequestAttributes _requestAttributes;
+
+        public SystemController(RequestAttributes requestAttributes, SystemManager feedbackManager)
         {
+            _requestAttributes = requestAttributes;
             _feedbackManager = feedbackManager;
         }
 
@@ -25,7 +28,7 @@ namespace GotIt.Controllers
         [Route("feedback")]
         public Result<bool> Feedback(FeedbackViewModel feedbackViewModel)
         {
-            return _feedbackManager.AddFeedback(feedbackViewModel, 1);
+            return _feedbackManager.AddFeedback(_requestAttributes.Id, feedbackViewModel);
         }
         [HttpPost]
         [Route("contact-us")]

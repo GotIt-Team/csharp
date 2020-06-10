@@ -10,8 +10,7 @@ namespace GotIt.BLL.ViewModels
     public class RegisterationViewModel
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "The email address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
@@ -21,6 +20,7 @@ namespace GotIt.BLL.ViewModels
         public string PhoneNumber { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
+        public string Picture { get; set; }
         public EUserType Type { get; set; }
         public EGender Gender { get; set; }
     }

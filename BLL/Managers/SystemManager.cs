@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace GotIt.BLL.Managers
 {
-    public class FeedbackManager : Repository<FeedbackEntity>
+    public class SystemManager : Repository<FeedbackEntity>
     {
-        public FeedbackManager(GotItDbContext dbContext) : base(dbContext) {}
-        public Result<bool> AddFeedback(FeedbackViewModel feedbackViewModel,int userID)
+        public SystemManager(GotItDbContext dbContext) : base(dbContext) {}
+        
+        public Result<bool> AddFeedback(int userId, FeedbackViewModel feedbackViewModel)
         {
             try
             {
@@ -21,15 +22,18 @@ namespace GotIt.BLL.Managers
                 {
                     Rate = feedbackViewModel.Rate,
                     Opinion = feedbackViewModel.Opinion,
-                    UserId = userID
+                    UserId = userId
                 };
+
                 Add(obj);
+                
                 SaveChanges();
-                return ResultHelper.Succeeded<bool>(data: true);
+                
+                return ResultHelper.Succeeded(data: true);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<bool>(data: false , message: e.Message);
+                return ResultHelper.Failed(data: false , message: e.Message);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using GotIt.BLL.ViewModels;
+using GotIt.Common.Enums;
 using GotIt.Common.Helper;
 using GotIt.MSSQL;
 using GotIt.MSSQL.Models;
@@ -22,7 +23,7 @@ namespace GotIt.BLL.Managers
 
                 if(notifications.Data == null)
                 {
-                    throw new Exception("Unexpected error happend in database");
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
                 var result = notifications.Data.Select(n => new NotificationViewModel
@@ -37,7 +38,7 @@ namespace GotIt.BLL.Managers
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<List<NotificationViewModel>>(null, message: e.Message);
+                return ResultHelper.Failed<List<NotificationViewModel>>(message: e.Message);
             }
         }
 
@@ -58,7 +59,7 @@ namespace GotIt.BLL.Managers
 
                 if (!result)
                 {
-                    throw new Exception("Unexpected error happend in database");
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
                 return ResultHelper.Succeeded(result);

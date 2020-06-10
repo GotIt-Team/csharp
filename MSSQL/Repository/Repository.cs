@@ -1,5 +1,7 @@
-﻿using GotIt.Common.Extentions;
+﻿using GotIt.Common.Exceptions;
+using GotIt.Common.Extentions;
 using GotIt.Common.Helper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -185,7 +187,7 @@ namespace GotIt.MSSQL.Repository
             {
                 // check if the TEntity have id property or not
                 Type type = typeof(TEntity);
-                var property = type.GetProperty("id");
+                var property = type.GetProperty("Id");
                 if (property == null)
                 {
                     throw new Exception("Entity should have property id");
@@ -219,6 +221,7 @@ namespace GotIt.MSSQL.Repository
                 return ResultHelper.Failed(data: false, count:null, message: e.Message);
             }
         }
+
         public int SaveChanges()
         {
             try
@@ -227,6 +230,11 @@ namespace GotIt.MSSQL.Repository
             }
             catch (Exception e)
             {
+                if (e.InnerException is SqlException innerException && (innerException.Number == 2627 || innerException.Number == 2601))
+                {
+                    throw new DuplicateDataException(innerException.Message);
+                }
+
                 throw e;
             }
         }

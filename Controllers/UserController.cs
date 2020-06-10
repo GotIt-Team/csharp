@@ -17,24 +17,29 @@ namespace GotIt.Controllers
 
     public class UserController : ControllerBase
     {
-        private readonly UserManager _userManager;
-        public UserController(UserManager userManager)
+        private readonly UserManager _manager;
+        private readonly ItemManager _itemManager;
+        private readonly RequestAttributes _requestAttributes;
+
+        public UserController(RequestAttributes requestAttributes, UserManager manager, ItemManager itemManager)
         {
-            _userManager = userManager;
+            _requestAttributes = requestAttributes;
+            _manager = manager;
+            _itemManager = itemManager;
         }
 
         [HttpPost]
         [Route("sign-in")]
-        public Result<object> Login()
+        public Result<TokenViewModel> Login([FromBody] UserLoginViewModel user)
         {
-            throw new NotImplementedException();
+            return _manager.Login(user);
         }
 
         [HttpPost]
         [Route("sign-up")]
         public Result<TokenViewModel> Registration([FromBody] RegisterationViewModel newUser)
         {
-            return _userManager.AddUser(newUser);
+            return _manager.AddUser(newUser);
         }
 
         [HttpGet]
@@ -52,21 +57,16 @@ namespace GotIt.Controllers
         }
 
         [HttpGet]
-        [Route("items/lost")]
-        public Result<object> LostItems()
+        [Route("items")]
+        [Authrization(EUserType.regular)]
+        public Result<List<UserItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet]
-        [Route("items/found")]
-        public Result<object> FoundItems()
-        {
-            throw new NotImplementedException();
+            return _itemManager.GetUserItems(_requestAttributes.Id, isLost, pageNo, pageSize);
         }
 
         [HttpPut]
         [Route("items/{id}")]
+        [Authrization(EUserType.regular)]
         public Result<object> EditItem([FromRoute] int id)
         {
             throw new NotImplementedException();
@@ -74,9 +74,10 @@ namespace GotIt.Controllers
 
         [HttpDelete]
         [Route("items/{id}")]
-        public Result<object> RemoveItem([FromRoute] int id)
+        [Authrization(EUserType.regular)]
+        public Result<bool> RemoveItem([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            return _itemManager.DeleteItem(id);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace GotIt
 
             services.AddScoped(typeof(ChatManager));
             services.AddScoped(typeof(CommentManager));
-            services.AddScoped(typeof(FeedbackManager));
+            services.AddScoped(typeof(SystemManager));
             services.AddScoped(typeof(ItemManager));
             services.AddScoped(typeof(MessageManager));
             services.AddScoped(typeof(NotificationManager));
@@ -46,7 +46,7 @@ namespace GotIt
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
 
-            services.AddDbContext<GotItDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local-Hassan"]));
+            services.AddDbContext<GotItDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local-Abdalrahman"]));
             #endregion
 
         }
@@ -62,8 +62,6 @@ namespace GotIt
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
