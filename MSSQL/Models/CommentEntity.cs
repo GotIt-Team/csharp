@@ -22,9 +22,7 @@ namespace GotIt.MSSQL.Models
         public virtual ItemEntity Item { get; set; }
 
         [ForeignKey("User")]
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         public virtual UserEntity User { get; set; }
-
-
     }
 }

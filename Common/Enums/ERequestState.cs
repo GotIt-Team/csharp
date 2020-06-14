@@ -7,8 +7,8 @@ namespace GotIt.Common.Enums
 {
     public enum ERequestState
     {
-        approved =1,
-        pending=2,
-        rejected=3,
+        Approved = 1,
+        Pending = 2,
+        Rejected = 3,
     }
 }

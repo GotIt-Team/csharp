@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GotIt.Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace GotIt.MSSQL.Models
 {
-    public class PersonImageEntity
+    public class ObjectAttributeEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Image { get; set; }
+        public EObjectAttribute Key { get; set; }
+        [Required]
+        public string Value { get; set; }
 
-        [ForeignKey("Person")]
-        public int PersonId { get; set; }
-        public virtual PersonEntity Person { get; set; }
+        [ForeignKey("Object")]
+        public int ObjectId { get; set; }
+        public virtual ObjectEntity Object { get; set; }
     }
 }

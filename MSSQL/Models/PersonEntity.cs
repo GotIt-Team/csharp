@@ -10,6 +10,11 @@ namespace GotIt.MSSQL.Models
 {
     public class PersonEntity
     {
+        public PersonEntity()
+        {
+            Images = new HashSet<PersonImageEntity>();
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
@@ -22,9 +27,11 @@ namespace GotIt.MSSQL.Models
         public EGender Gender { get; set; }
         [Required]
         public string Embeddings { get; set; }
+
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public virtual ItemEntity Item { get; set; }
+
         public virtual ICollection<PersonImageEntity> Images { get; set; }
     }
 }

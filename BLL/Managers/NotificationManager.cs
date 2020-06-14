@@ -19,7 +19,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var notifications = GetAllPaginated(n => n.UserId == userId, pageNo, pageSize);
+                var notifications = GetAllPaginated(n => n.ReceiverId == userId, pageNo, pageSize);
 
                 if(notifications.Data == null)
                 {
@@ -31,7 +31,14 @@ namespace GotIt.BLL.Managers
                     Id = n.Id,
                     Content = n.Content,
                     IsSeen = n.IsSeen,
-                    Link = n.Link
+                    Link = n.Link,
+                    type = n.Type,
+                    Sender = new UserViewModel
+                    {
+                        Id = n.Sender.Id,
+                        Name = n.Sender.Name,
+                        Picture = n.Sender.Picture
+                    }
                 }).ToList();
 
                 return ResultHelper.Succeeded(result, notifications.Count);
@@ -52,7 +59,8 @@ namespace GotIt.BLL.Managers
                     IsSeen = true,
                     Content = notification.Content,
                     Link = notification.Link,
-                    UserId = userId
+                    ReceiverId = userId,
+                    SenderId = notification.Sender.Id
                 };
                 var result = Update(model);
 

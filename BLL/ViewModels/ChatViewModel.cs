@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace GotIt.BLL.ViewModels
 {
-    public class FeedbackViewModel
+    public class ChatViewModel
     {
         public int Id { get; set; }
-        public int Rate { get; set; }
-        public string Opinion { get; set; }
+        public bool IsOnline { get; set; }
         public UserViewModel User { get; set; }
+        public MessageViewModel LastMessage { get; set; }
     }
 }

@@ -10,14 +10,15 @@ namespace GotIt.MSSQL
     public class GotItDbContext: DbContext
     {
         public GotItDbContext(DbContextOptions<GotItDbContext> options) : base(options) { }
+
         public DbSet<ChatEntity> Chats { get; set; }
         public DbSet<CommentEntity> Comments { get; set; }
         public DbSet<FeedbackEntity> Feedbacks { get; set; }
         public DbSet<ItemEntity> Items { get; set; }
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
-        public DbSet<ObjectColorEntity> ObjectColors { get; set; }
         public DbSet<ObjectEntity> Objects { get; set; }
+        public DbSet<ObjectAttributeEntity> ObjectAttributes { get; set; }
         public DbSet<PersonEntity> Persons { get; set; }
         public DbSet<PersonImageEntity> PersonImages { get; set; }
         public DbSet<ProbablyMatchEntity> ProbablyMatches { get; set; }
@@ -69,6 +70,16 @@ namespace GotIt.MSSQL
             {
                 e.HasIndex(m => m.Email).IsUnique();
             });
+            modelBuilder.Entity<NotificationEntity>(e =>
+            {
+                e.HasOne(p => p.Sender)
+                 .WithMany(p => p.SentNotifications)
+                 .OnDelete(DeleteBehavior.NoAction);
+                e.HasOne(p => p.Receiver)
+                 .WithMany(p => p.ReceivedNotifications)
+                 .OnDelete(DeleteBehavior.NoAction);
+            });
+
             base.OnModelCreating(modelBuilder);
         }
     }

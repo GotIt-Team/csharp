@@ -13,9 +13,11 @@ namespace GotIt.MSSQL.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
+
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public virtual ItemEntity Item { get; set; }
+        
         [ForeignKey("MatchedItem")]
         public int MatchedItemId { get; set; }
         public virtual ItemEntity MatchedItem { get; set; }

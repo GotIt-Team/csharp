@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GotIt.BLL.ViewModels
 {
-    public class UserLoginViewModel
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "The email address is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]

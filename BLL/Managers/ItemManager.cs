@@ -15,33 +15,37 @@ namespace GotIt.BLL.Managers
     {
         public ItemManager(GotItDbContext dbContext) : base(dbContext) {}
 
-        public Result<List<UserItemViewModel>> GetUserItems(int userId, bool isLost, int pageNo, int pageSize)
+        public Result<List<ItemViewModel>> GetUserItems(int userId, bool isLost, int pageNo, int pageSize)
         {
             try
             {
                 var items = GetAllPaginated(i => i.UserId == userId && i.IsLost == isLost && i.MatchDate == null, pageNo, pageSize,
-                    "Person.Images", "_Object");
+                    "Person.Images", "Object", "User");
 
                 if (items.Data == null)
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
-                var result = items.Data.Select(i => new UserItemViewModel
+                var result = items.Data.Select(i => new ItemViewModel
                 {
                     Id = i.Id,
                     Content = i.Content,
                     CreationDate = i.CreationDate,
                     Type = i.Type,
-                    Image = i.Person != null ? i.Person.Images?.FirstOrDefault()?.Image : i._Object?.Image,
-                    IsLost = i.IsLost
+                    Image = i.Person != null ? i.Person.Images?.FirstOrDefault()?.Image : i.Object?.Image,
+                    User = new UserViewModel
+                    {
+                        Name = i.User.Name,
+                        Picture = i.User.Picture
+                    }
                 }).ToList();
 
                 return ResultHelper.Succeeded(result, items.Count);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<List<UserItemViewModel>>(message: e.Message);
+                return ResultHelper.Failed<List<ItemViewModel>>(message: e.Message);
             }
         }
 

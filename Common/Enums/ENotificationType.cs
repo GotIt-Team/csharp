@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace GotIt.Common.Enums
 {
-    public enum EContentType
+    public enum ENotificationType
     {
-        Text = 1 ,
-        Image = 2,
-        Vedio = 3,
+        Match = 1,
+        Comment = 2,
+        Request = 3,
+        Message = 4
     }
 }

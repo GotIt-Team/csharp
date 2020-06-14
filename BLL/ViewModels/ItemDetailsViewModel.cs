@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace GotIt.BLL.ViewModels
 {
-    public class UserItemViewModel
+    public class ItemDetailsViewModel
     {
         public int Id { get; set; }
         public DateTime CreationDate { get; set; }
-        public bool IsLost { get; set; }
         public string Content { get; set; }
+        public bool IsLost { get; set; }
         public EItemType Type { get; set; }
-        public string Image { get; set; }
+        public List<string> Images { get; set; }
+        public PersonViewModel Person { get; set; }
+        public ObjectViewModel Object { get; set; }
+        public List<CommentViewModel> Comments { get; set; }
+        public UserViewModel User { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace GotIt.BLL.Managers
                 var resultToken = new TokenViewModel
                 {
                     Name = user.Name,
-                    Country = user.Country,
+                    Picture = user.Picture,
                     Token = new JwtSecurityTokenHandler().WriteToken(token)
                 };
 

@@ -15,12 +15,15 @@ namespace GotIt.MSSQL.Models
         public int Id { get; set; }
         [Required]
         public DateTime SendDate { get; set; }
-        public DateTime ReplyDate { get; set; }
+        public DateTime? ReplyDate { get; set; }
         [Required]
         public ERequestState State { get; set; }
+        public string ReplyMessage { get; set; }
+
         [ForeignKey("Item")]
         public int ItemId { get; set; }
         public virtual ItemEntity Item { get; set; }
+
         [ForeignKey("User")]
         public int UserId { get; set; }
         public virtual UserEntity User { get; set; }

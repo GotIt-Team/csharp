@@ -19,6 +19,7 @@ namespace GotIt.MSSQL.Models
         public EContentType Type { get; set; }
         [Required]
         public DateTime Time { get; set; }
+
         [ForeignKey("User")]
         public int UserId { get; set; }
         public virtual UserEntity User { get; set; }

@@ -30,7 +30,7 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("sign-in")]
-        public Result<TokenViewModel> Login([FromBody] UserLoginViewModel user)
+        public Result<TokenViewModel> Login([FromBody] LoginViewModel user)
         {
             return _manager.Login(user);
         }
@@ -59,7 +59,7 @@ namespace GotIt.Controllers
         [HttpGet]
         [Route("items")]
         [Authrization(EUserType.regular)]
-        public Result<List<UserItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
+        public Result<List<ItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _itemManager.GetUserItems(_requestAttributes.Id, isLost, pageNo, pageSize);
         }

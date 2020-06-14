@@ -7,7 +7,7 @@ namespace GotIt.Common.Enums
 {
     public enum EItemType
     {
-        person = 1 ,
-        _object =2,
+        Person = 1 ,
+        Object =2,
     }
 }

@@ -7,9 +7,9 @@ namespace GotIt.Common.Enums
 {
     public enum EAgeStage
     {
-        child=1,
-        underAge=2,
-        guy=3,
-        elderly=4
+        Child=1,
+        UnderAge=2,
+        Guy=3,
+        Elderly=4
     }
 }

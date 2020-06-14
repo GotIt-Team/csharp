@@ -79,7 +79,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<TokenViewModel> Login(UserLoginViewModel user)
+        public Result<TokenViewModel> Login(LoginViewModel user)
         {
             try
             {

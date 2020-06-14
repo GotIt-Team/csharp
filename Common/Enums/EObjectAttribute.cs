@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 
 namespace GotIt.Common.Enums
 {
-    public enum EContentType
+    public enum EObjectAttribute
     {
-        Text = 1 ,
-        Image = 2,
-        Vedio = 3,
+        Class = 1,
+        Brand = 2,
+        Model = 3,
+        Serial = 4,
+        Size = 5
     }
 }
