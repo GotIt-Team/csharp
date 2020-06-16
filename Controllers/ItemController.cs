@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GotIt.BLL.Managers;
+using GotIt.BLL.ViewModels;
+using GotIt.Common.Enums;
+using GotIt.Common.GlobalFilters;
 using GotIt.Common.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,22 +16,28 @@ namespace GotIt.Controllers
     [ApiController]
     public class ItemController : ControllerBase
     {
-        public ItemController()
+        private readonly ItemManager _itemManager;
+        private readonly RequestAttributes _requestAttributes;
+        public ItemController(ItemManager itemManager, RequestAttributes requestAttributes)
         {
-
+            _itemManager = itemManager;
+            _requestAttributes = requestAttributes;
         }
 
         [HttpGet]
-        public Result<object> GetItems()
+        [Route("Items")]
+        [Authrization(EUserType.regular)]
+        public Result<List<ItemViewModel>> GetItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
-            throw new NotImplementedException();
+            return _itemManager.GetItems(_requestAttributes.Id, isLost, pageNo, pageSize);
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public Result<object> GetItem([FromRoute] int id)
+        [Route("Detail/{id}")]
+        [Authrization(EUserType.regular)]
+        public Result<ItemDetailsViewModel> GetItem([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            return _itemManager.GetItem(id);
         }
 
         [HttpPost]

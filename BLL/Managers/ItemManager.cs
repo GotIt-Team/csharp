@@ -15,13 +15,12 @@ namespace GotIt.BLL.Managers
     {
         public ItemManager(GotItDbContext dbContext) : base(dbContext) {}
 
-        public Result<List<ItemViewModel>> GetUserItems(int userId, bool isLost, int pageNo, int pageSize)
+        public Result<List<ItemViewModel>> GetItems(int? userId, bool isLost, int pageNo, int pageSize)
         {
             try
             {
-                var items = GetAllPaginated(i => i.UserId == userId && i.IsLost == isLost && i.MatchDate == null, pageNo, pageSize,
+                var items = GetAllPaginated(i => i.UserId == (userId ?? i.UserId) && i.IsLost == isLost && i.MatchDate == null, pageNo, pageSize,
                     "Person.Images", "Object", "User");
-
                 if (items.Data == null)
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
@@ -48,7 +47,56 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<List<ItemViewModel>>(message: e.Message);
             }
         }
+        public Result<ItemDetailsViewModel> GetItem(int id)
+        {
+            try
+            {
+                var item = Get(i => i.Id == id, "Person.Images", "Object", "User", "Comments.User");
+                if (item == null)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                var result = new ItemDetailsViewModel
+                {
+                    Id = item.Id,
+                    Content = item.Content,
+                    CreationDate = item.CreationDate,
+                    Type = item.Type,
+                    IsLost = item.IsLost,
+                    Person = item.Person!=null ? new PersonViewModel {
+                        Id = item.Person.Id,
+                        Name = item.Person.Name,
+                        Gender = item.Person.Gender,
+                        AgeStage = item.Person.AgeStage
+                    } : null ,
+                    Images = item.Person != null ? item.Person.Images.Select(i => i.Image).ToList():new List<string>{item.Object.Image},
+                    User = new UserViewModel
+                    {
+                        Id = item.Id,
+                        Name = item.User.Name,
+                        Picture = item.User.Picture
+                    },
+                    Comments = item.Comments.Select(i => new CommentViewModel
+                    {
+                        Id = i.Id,
+                        Date = i.Date,
+                        Content = i.Content,
+                        User = new UserViewModel
+                        {
+                            Id = i.User.Id,
+                            Name = i.User.Name,
+                            Picture = i.User.Picture
+                        }
+                    }).ToList()
+                };
 
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<ItemDetailsViewModel>(message: e.Message);
+            }
+        }
         public Result<bool> DeleteItem(int itemId)
         {
             try
