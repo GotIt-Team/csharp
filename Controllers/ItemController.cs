@@ -26,16 +26,18 @@ namespace GotIt.Controllers
         }
 
         [HttpGet]
-        public Result<object> GetItems()
+        [Authrization(EUserType.regular)]
+        public Result<List<ItemViewModel>> GetItems([FromQuery] int pageNo, [FromQuery] int pageSize)
         {
-            throw new NotImplementedException();
+            return _manager.GetItems(null, true, pageNo, pageSize);
         }
 
         [HttpGet]
         [Route("{id}")]
-        public Result<object> GetItem([FromRoute] int id)
+        [Authrization(EUserType.regular)]
+        public Result<ItemDetailsViewModel> GetItem([FromRoute] int id)
         {
-            throw new NotImplementedException();
+            return _manager.GetItemDetails(id);
         }
 
         [HttpPost]
