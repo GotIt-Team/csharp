@@ -22,16 +22,18 @@ namespace GotIt.MSSQL.Repository
         // add list
         List<TEntity> Add(List<TEntity> entities);
         // update
-        bool Update(TEntity entity);
+        void Update(TEntity entity);
         // update list
-        bool Update(List<TEntity> entities);
+        void Update(List<TEntity> entities);
+        // update specific properties
+        void Update(TEntity entity, params Expression<Func<TEntity, object>>[] properties);
         // delete
-        bool Delete(TEntity entity);
+        void Delete(TEntity entity);
         // delete list
-        bool Delete(List<TEntity> entities);
+        void Delete(List<TEntity> entities);
         // delete by id
-        bool DeleteById(params int[] ids);
+        void DeleteById(params int[] ids);
         // save changed
-        int SaveChanges();
+        bool SaveChanges();
     }
 }

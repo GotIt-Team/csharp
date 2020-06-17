@@ -58,26 +58,9 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("items")]
-        [Authrization(EUserType.regular)]
         public Result<List<ItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
-            return _itemManager.GetUserItems(_requestAttributes.Id, isLost, pageNo, pageSize);
-        }
-
-        [HttpPut]
-        [Route("items/{id}")]
-        [Authrization(EUserType.regular)]
-        public Result<object> EditItem([FromRoute] int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpDelete]
-        [Route("items/{id}")]
-        [Authrization(EUserType.regular)]
-        public Result<bool> RemoveItem([FromRoute] int id)
-        {
-            return _itemManager.DeleteItem(id);
+            return _itemManager.GetUserItems(1, isLost, pageNo, pageSize);
         }
     }
 }

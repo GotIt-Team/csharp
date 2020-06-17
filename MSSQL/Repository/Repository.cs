@@ -129,12 +129,11 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public bool Update(TEntity entity)
+        public void Update(TEntity entity)
         {
             try
             {
                 _dbSet.Update(entity);
-                return SaveChanges() > 0;
             }
             catch (Exception e)
             {
@@ -142,12 +141,11 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public bool Update(List<TEntity> entities)
+        public void Update(List<TEntity> entities)
         {
             try
             {
                 _dbSet.UpdateRange(entities);
-                return SaveChanges() > 0;
             }
             catch (Exception e)
             {
@@ -155,12 +153,28 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public bool Delete(TEntity entity)
+        public void Update(TEntity entity, params Expression<Func<TEntity, object>>[] properties)
+        {
+            try
+            {
+                var entry = _dbSet.Attach(entity);
+
+                foreach (var property in properties)
+                {
+                    entry.Property(property).IsModified = true;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public void Delete(TEntity entity)
         {
             try
             {
                 _dbSet.Remove(entity);
-                return SaveChanges() > 0;
             }
             catch (Exception e)
             {
@@ -168,12 +182,11 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public bool Delete(List<TEntity> entities)
+        public void Delete(List<TEntity> entities)
         {
             try
             {
                 _dbSet.RemoveRange(entities);
-                return SaveChanges() > 0;
             }
             catch (Exception e)
             {
@@ -181,7 +194,7 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public bool DeleteById(params int[] ids)
+        public void DeleteById(params int[] ids)
         {
             try
             {
@@ -200,7 +213,8 @@ namespace GotIt.MSSQL.Repository
                     property.SetValue(entity, id);
                     entities.Add(entity);
                 }
-                return Delete(entities);
+
+                Delete(entities);
             }
             catch (Exception e)
             {
@@ -208,25 +222,11 @@ namespace GotIt.MSSQL.Repository
             }
         }
 
-        public Result<bool> Any(Expression<Func<TEntity, bool>> predicate)
+        public bool SaveChanges()
         {
             try
             {
-                var result = _dbSet.Any(predicate);
-
-                return ResultHelper.Succeeded(data: result);
-            }
-            catch (Exception e)
-            {
-                return ResultHelper.Failed(data: false, count:null, message: e.Message);
-            }
-        }
-
-        public int SaveChanges()
-        {
-            try
-            {
-                return _dbContext.SaveChanges();
+                return _dbContext.SaveChanges() > 0;
             }
             catch (Exception e)
             {
@@ -244,6 +244,7 @@ namespace GotIt.MSSQL.Repository
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)

@@ -62,8 +62,9 @@ namespace GotIt.BLL.Managers
                     ReceiverId = userId,
                     SenderId = notification.Sender.Id
                 };
-                var result = Update(model);
+                Update(model);
 
+                var result = SaveChanges();
 
                 if (!result)
                 {

@@ -49,13 +49,44 @@ namespace GotIt.BLL.Managers
             }
         }
 
+        public Result<bool> EditItem(int userId, int itemId, ItemViewModel item)
+        {
+            try
+            {
+                var data = new ItemEntity
+                {
+                    Id = itemId,
+                    Content = item.Content,
+                    UserId = userId
+                };
+
+                Update(data, i => i.Content);
+
+                var result = SaveChanges();
+
+                if (!result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
         public Result<bool> DeleteItem(int itemId)
         {
             try
             {
-                var result = DeleteById(itemId);
+                DeleteById(itemId);
 
-                if (result == false)
+                var result = SaveChanges();
+
+                if (!result)
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }

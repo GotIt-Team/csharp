@@ -29,6 +29,8 @@ namespace GotIt
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddControllers();
 
             #region Dependancy Injection
@@ -46,7 +48,11 @@ namespace GotIt
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
 
-            services.AddDbContext<GotItDbContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Local"]));
+            services.AddDbContext<GotItDbContext>(options =>
+            {
+                options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()));
+                options.UseSqlServer(Configuration["ConnectionStrings:Local"]);
+            });
             #endregion
 
         }
@@ -59,6 +65,13 @@ namespace GotIt
                 app.UseDeveloperExceptionPage();
             }
             
+            app.UseCors(options => options
+                .SetIsOriginAllowed(x => _ = true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+            );
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
