@@ -54,7 +54,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var item = Get(i => i.Id == id, "Person.Images", "Object", "User", "Comments.User");
+                var item = Get(i => i.Id == id, "Person.Images", "Object.Attributes", "User", "Comments.User");
 
                 if (item == null)
                 {
