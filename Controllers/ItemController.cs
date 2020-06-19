@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using GotIt.BLL.Managers;
 using GotIt.BLL.ViewModels;
 using GotIt.Common.Enums;
-using GotIt.Common.GlobalFilters;
+using GotIt.Configuration;
 using GotIt.Common.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

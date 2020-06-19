@@ -17,10 +17,69 @@ namespace GotIt.BLL.Managers
     public class TokenManager
     {
         private readonly IConfiguration _configuration;
-        
+        private readonly string GOT_IT_TOKEN_SECRET_KEY;
+
         public TokenManager(IConfiguration configuration)
         {
             _configuration = configuration;
+            GOT_IT_TOKEN_SECRET_KEY = _configuration["Jwt:JWTSecret"];
+        }
+
+        public RequestAttributes ExtractAttributes(ClaimsPrincipal claimsPrincipal, EUserType [] userTypes)
+        {
+            try
+            {
+                var userId = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+                var name = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "Name")?.Value;
+                var email = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+                var type = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "Type")?.Value;
+
+                var userType = (EUserType)Enum.Parse(typeof(EUserType), type);
+                if (!userTypes.Contains(userType))
+                {
+                    throw new Exception("User type is not allowed to access method");
+                }
+
+                return new RequestAttributes
+                {
+                    Id = int.Parse(userId),
+                    Name = name,
+                    Email = email,
+                    Type = userType
+                };
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public ClaimsPrincipal ValidateToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GOT_IT_TOKEN_SECRET_KEY));
+                var TokenValidationParameters = new TokenValidationParameters
+                {
+                    //what to validate
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    //setup validate data
+                    ValidIssuer = "GotIt",
+                    ValidAudience = "GotIt-Users",
+                    IssuerSigningKey = symmetricSecurityKey
+                };
+
+                return tokenHandler.ValidateToken(token, TokenValidationParameters, out SecurityToken validatedToken);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public Result<TokenViewModel> GenerateUserToken(UserEntity user)
