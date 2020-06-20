@@ -37,9 +37,16 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("sign-up")]
-        public Result<TokenViewModel> Registration([FromBody] RegisterationViewModel newUser)
+        public Result<bool> Registration([FromBody] RegisterationViewModel newUser)
         {
             return _manager.AddUser(newUser);
+        }
+
+        [HttpPut]
+        [Route("confirm-account")]
+        public Result<bool> confirm([FromQuery]int UserId, [FromQuery]string Token)
+        {
+            return _manager.confirm(UserId, Token);
         }
 
         [HttpGet]
