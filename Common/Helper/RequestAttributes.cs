@@ -12,6 +12,7 @@ namespace GotIt.Common.Helper
         public string Name { get; set; }
         public string Email { get; set; }
         public EUserType Type { get; set; }
+        public string AppBaseUrl { get; set; }
 
         public void CopyFrom(RequestAttributes requestAttributes)
         {

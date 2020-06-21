@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
+using System.Buffers.Text;
 
 namespace GotIt.Common.Helper
 {
@@ -8,6 +9,13 @@ namespace GotIt.Common.Helper
     {
         private static readonly int saltSize = 20;
         private static readonly int saltPosition = 5;
+
+        public static string DecodeText(string encodedText)
+        {
+            var base64EncodedBytes = Convert.FromBase64String(encodedText);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
         public static string CreatePasswordHash(string pwd)
         {
             return CreatePasswordHash(pwd, CreateSalt());

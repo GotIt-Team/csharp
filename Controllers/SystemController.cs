@@ -29,17 +29,17 @@ namespace GotIt.Controllers
         [HttpPost]
         [Route("feedback")]
         [Authrization(EUserType.regular)]
-        public Result<bool> Feedback(FeedbackViewModel feedbackViewModel)
+        public Result<bool> Feedback([FromBody] FeedbackViewModel feedbackViewModel)
         {
             return _systemManager.AddFeedback(_requestAttributes.Id, feedbackViewModel);
         }
 
         [HttpPost]
         [Route("contact-us")]
-        [Authrization(EUserType.regular)]
-        public Task<bool> ContactUs([FromBody] string message)
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public async Task<Result<bool>> ContactUs([FromBody] ContactUsViewModel message)
         {
-            return _systemManager.ContactUsAsync(_requestAttributes.Email,message);
+            return await _systemManager.ContactUs(message);
         }
     }
 }

@@ -7,6 +7,7 @@ using GotIt.MSSQL.Models;
 using GotIt.MSSQL.Repository;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -19,12 +20,18 @@ namespace GotIt.BLL.Managers
     public class UserManager : Repository<UserEntity>
     {
         private readonly TokenManager _tokenManager;
+        private readonly RequestAttributes _requestAttributes;
+        private readonly EmailProvider _emailProvider;
         
-        public UserManager(GotItDbContext dbContext, TokenManager tokenManager) : base(dbContext)
+        public UserManager(GotItDbContext dbContext, RequestAttributes requestAttributes, 
+            TokenManager tokenManager, EmailProvider emailProvider) : base(dbContext)
         {
+            _requestAttributes = requestAttributes;
             _tokenManager = tokenManager;
+            _emailProvider = emailProvider;
         }
-        public Result<bool> AddUser(RegisterationViewModel userViewModel)
+
+        public async Task<Result<bool>> AddUser(RegisterationViewModel userViewModel)
         {
             try
             {
@@ -67,30 +74,27 @@ namespace GotIt.BLL.Managers
 
                 SaveChanges();
 
-                string token = _tokenManager.GenerateUserToken(result).Data.Token;
-                var confirmLink = "https://localhost:5001/api/user/confirm-account?UserId=" + user.Id.ToString()+"&Token="+token;
-                var client = new SmtpClient("smtp.gmail.com", 587)
+                var token = _tokenManager.GenerateUserToken(result);
+                if(!token.IsSucceeded || token.Data == null)
                 {
-                    Credentials = new NetworkCredential("hassan.sheimy88@gmail.com", "Password"),
-                    EnableSsl = true
-                };
-                string body = @"
-                    <html>
-                        <body>
-                            <h1>Welcome in GotIt ya ryes</h1>
-                            <h3>Please click the Button to confirm your Account,<br></br></h3>
-                            <form method='GET' action ='"+confirmLink+@"'>
-                                <input type = 'submit' value = 'Confirm Your Account' />
-                            </form>
-                        </body>
-                    </html>";
+                    // should be some logic to fix the error (user has been added and no token generated)!!
+                    throw new Exception(EResultMessage.InternalServerError.ToString());
+                }
+
+                var confirmLink = string.Format("{0}/api/user/confirm-account?userId={1}&token={2}", _requestAttributes.AppBaseUrl ,user.Id, token.Data.Token);
                 
-                MailMessage msg = new MailMessage("hassan.sheimy98@yahoo.com", "hassan.sheimy88@gmail.com");
-                msg.IsBodyHtml = true;
-                msg.Body = body;
-                msg.Subject = "ومعانا اول تيست ونقول بسم الله";
-                client.Send(msg);
-                return ResultHelper.Succeeded(data: true);
+                string body = File.ReadAllText("wwwroot/html/registartion.html");
+                body = body.Replace("{link-path}", confirmLink);
+                body = body.Replace("{user-name}", user.Name);
+
+                MailMessage msg = new MailMessage(EmailProvider.SMTP_USER, user.Email)
+                {
+                    IsBodyHtml = true,
+                    Body = body,
+                    Subject = "Confirm your account on Got It"
+                };
+
+                return await _emailProvider.SendMailAsync(msg);
             }
             catch (DuplicateDataException)
             {
@@ -101,7 +105,8 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<bool>(message: e.Message);
             }
         }
-        public Result<bool> confirm(int? id, string token)
+
+        public Result<bool> Confirm(int? id, string token)
         {
             try
             {
@@ -125,6 +130,7 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<bool>(message: e.Message);
             }
         }
+
         public Result<TokenViewModel> Login(LoginViewModel user)
         {
             try

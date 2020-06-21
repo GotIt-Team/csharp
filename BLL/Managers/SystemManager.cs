@@ -11,12 +11,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Net;
+using System.IO;
 
 namespace GotIt.BLL.Managers
 {
     public class SystemManager : Repository<FeedbackEntity>
     {
-        public SystemManager(GotItDbContext dbContext) : base(dbContext) {}
+        private readonly EmailProvider _emailProvider;
+
+        public SystemManager(GotItDbContext dbContext, EmailProvider emailProvider) : base(dbContext) 
+        {
+            _emailProvider = emailProvider;
+        }
         
         public Result<bool> AddFeedback(int userId, FeedbackViewModel feedbackViewModel)
         {
@@ -41,24 +47,21 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public async Task<bool> ContactUsAsync(string from,string message)
+        public async Task<Result<bool>> ContactUs(ContactUsViewModel contactUs)
         {
             try
             {
-                var client = new SmtpClient("smtp.gmail.com", 587)
+                MailMessage msg = new MailMessage(contactUs.Email, EmailProvider.SMTP_USER)
                 {
-                    Credentials = new NetworkCredential("hassan.sheimy88@gmail.com", "Password"),
-                    EnableSsl = true
+                    Subject = contactUs.Subject,
+                    Body = contactUs.Message
                 };
-                
-                MailMessage msg = new MailMessage(from,"hassan.sheimy98@yahoo.com");
-                msg.Subject = "ومعانا اول تيست ونقول بسم الله";
-                client.Send(msg);
-                return await Task.FromResult(true);
+
+                return await _emailProvider.SendMailAsync(msg);
             }
             catch (Exception e)
             {
-                return await Task.FromResult(false);
+                return ResultHelper.Failed<bool>(message: e.Message);
             }
         }
     }

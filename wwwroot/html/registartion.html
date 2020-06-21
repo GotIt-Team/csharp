@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 18px;
+        }
+        .center {
+            width: auto;
+        }
+        .container {
+            display: table;
+            margin: 0 auto;
+            border: solid 1px #EEE;
+        }
+        .header {
+            text-align: left;
+            line-height: 60px;
+            background-color: #3B7585;
+            color: white;
+            height: 60px;
+        }
+        .header h3 {
+            text-align: left;
+            margin: 0 10px
+        }
+        .body {
+            background-color: #D1D0B5;
+            color: black;
+            text-align: center;
+            padding: 20px
+        }
+        .body h3 {
+            margin: 0
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #212529;
+            text-align: center;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid #3B7585;
+            color: #fff;
+            background-color: #3B7585;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .btn:hover {
+            color: #212529;
+            text-decoration: none;
+        }
+        .btn:focus, .btn.focus {
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .app-title {
+            font-weight: bolder;
+            color: #3B7585;
+            font-size: 20px
+        }
+        .primary-text {
+            font-weight: bolder;
+            color: #458C9E;
+        }
+        .footer {
+            border-top: solid 1px #3B7585
+        }
+
+    </style>
+</head>
+<body>
+    <div class="center">
+        <div class="container">
+            <div class="logo">
+
+            </div>
+            <div class="header">
+                <h3>One last thing to get you started!</h3>
+            </div>
+            <div class="body">
+                <h3>Thank you for joining <span class="app-title">Got It</span></h3>
+                <p>We are glad to meet you, <span class="primary-text">{user-name}</span></p>
+                <p><span class="app-title">Got It</span> helps everyone find their lost belongings</p>
+                <p>before using our services please confirm your registration<br />by click on the button below</p>
+                <form method="get" action="{link-path}">
+                    <input type="submit" class="btn" value="confirm registartion" />
+                </form>
+                <p>If the link above does not work, paste this into your browser:</p>
+                <p>{link-path}</p>
+            </div>
+            <div class="footer body">
+                <p>
+                    This is an Auto-Generated mail. Do not reply to this.<br />
+                    You're receiving this email because you signed up for the <span class="app-title">Got It</span> service.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GotIt.BLL.Managers;
 using GotIt.Common.Helper;
+using GotIt.Configuration;
 using GotIt.MSSQL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,6 +49,8 @@ namespace GotIt
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
 
+            services.AddScoped(typeof(EmailProvider));
+
             services.AddDbContext<GotItDbContext>(options =>
             {
                 options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()));
@@ -73,6 +76,8 @@ namespace GotIt
             );
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<RequestMiddleware>();
 
             app.UseRouting();
 

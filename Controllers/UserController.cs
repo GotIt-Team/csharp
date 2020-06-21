@@ -37,16 +37,16 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("sign-up")]
-        public Result<bool> Registration([FromBody] RegisterationViewModel newUser)
+        public async Task<Result<bool>> Registration([FromBody] RegisterationViewModel newUser)
         {
-            return _manager.AddUser(newUser);
+            return await _manager.AddUser(newUser);
         }
 
         [HttpPut]
         [Route("confirm-account")]
-        public Result<bool> confirm([FromQuery]int UserId, [FromQuery]string Token)
+        public Result<bool> Confirm([FromQuery]int UserId, [FromQuery]string Token)
         {
-            return _manager.confirm(UserId, Token);
+            return _manager.Confirm(UserId, Token);
         }
 
         [HttpGet]
