@@ -25,7 +25,7 @@ namespace GotIt.BLL.Managers
             GOT_IT_TOKEN_SECRET_KEY = _configuration["Jwt:JWTSecret"];
         }
 
-        public RequestAttributes ExtractAttributes(ClaimsPrincipal claimsPrincipal, EUserType [] userTypes)
+        private RequestAttributes ExtractAttributes(ClaimsPrincipal claimsPrincipal, EUserType [] userTypes)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public ClaimsPrincipal ValidateToken(string token)
+        public RequestAttributes ValidateToken(string token, params EUserType[] userTypes)
         {
             try
             {
@@ -74,7 +74,9 @@ namespace GotIt.BLL.Managers
                     IssuerSigningKey = symmetricSecurityKey
                 };
 
-                return tokenHandler.ValidateToken(token, TokenValidationParameters, out SecurityToken validatedToken);
+                var claimsPrincipal = tokenHandler.ValidateToken(token, TokenValidationParameters, out SecurityToken validatedToken);
+
+                return ExtractAttributes(claimsPrincipal, userTypes);
             }
             catch (Exception e)
             {
@@ -82,7 +84,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<TokenViewModel> GenerateUserToken(UserEntity user)
+        public TokenViewModel GenerateUserToken(UserEntity user)
         {
             try
             {
@@ -95,7 +97,6 @@ namespace GotIt.BLL.Managers
                 // add claims
                 var claims = new List<Claim>
                 {
-
                     // add email
                     new Claim("Email", user.Email),
 
@@ -119,20 +120,17 @@ namespace GotIt.BLL.Managers
                 );
 
                 // result
-                var resultToken = new TokenViewModel
+                return new TokenViewModel
                 {
                     Name = user.Name,
                     Picture = user.Picture,
                     Token = new JwtSecurityTokenHandler().WriteToken(token)
                 };
-
-                //return token
-                return ResultHelper.Succeeded(resultToken);
             }
             // any un excpected error happened
-            catch (Exception)
+            catch (Exception e)
             {
-                return ResultHelper.Failed<TokenViewModel>(message: EResultMessage.GenerateTokenFaild.ToString());
+                throw e;
             }
         }
     }

@@ -39,7 +39,7 @@ namespace GotIt.Controllers
         [Authrization(EUserType.regular, EUserType.organization)]
         public async Task<Result<bool>> ContactUs([FromBody] ContactUsViewModel message)
         {
-            return await _systemManager.ContactUs(message);
+            return await _systemManager.ContactUs(_requestAttributes.Id, message);
         }
     }
 }

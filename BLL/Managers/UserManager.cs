@@ -6,13 +6,7 @@ using GotIt.MSSQL;
 using GotIt.MSSQL.Models;
 using GotIt.MSSQL.Repository;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GotIt.BLL.Managers
@@ -21,14 +15,12 @@ namespace GotIt.BLL.Managers
     {
         private readonly TokenManager _tokenManager;
         private readonly RequestAttributes _requestAttributes;
-        private readonly EmailProvider _emailProvider;
         
         public UserManager(GotItDbContext dbContext, RequestAttributes requestAttributes, 
-            TokenManager tokenManager, EmailProvider emailProvider) : base(dbContext)
+            TokenManager tokenManager) : base(dbContext)
         {
             _requestAttributes = requestAttributes;
             _tokenManager = tokenManager;
-            _emailProvider = emailProvider;
         }
 
         public async Task<Result<bool>> AddUser(RegisterationViewModel userViewModel)
@@ -62,8 +54,7 @@ namespace GotIt.BLL.Managers
 
                 // Hash user password
                 user.HashPassword = Protected.CreatePasswordHash(userViewModel.Password);
-                //user.IsConfirmed = true;
-
+                
                 // Add user
                 var result = Add(user);
 
@@ -74,29 +65,27 @@ namespace GotIt.BLL.Managers
 
                 SaveChanges();
 
-                var tokenResult = _tokenManager.GenerateUserToken(result);
-                if(!tokenResult.IsSucceeded || tokenResult.Data == null)
-                {
-                    // should be some logic to fix the error (user has been added and no token generated)!!
-                    throw new Exception(EResultMessage.InternalServerError.ToString());
-                }
-
+                var token = _tokenManager.GenerateUserToken(result).Token;
+                
                 var confirmLink = string.Format("{0}/api/user/confirm-account", _requestAttributes.AppBaseUrl);
                 
                 string body = File.ReadAllText("wwwroot/html/registartion.html");
                 body = body.Replace("{link-path}", confirmLink);
                 body = body.Replace("{user-name}", user.Name);
                 body = body.Replace("{user-id}", user.Id.ToString());
-                body = body.Replace("{user-token}", tokenResult.Data.Token);
+                body = body.Replace("{user-token}", token);
 
-                MailMessage msg = new MailMessage(EmailProvider.SMTP_USER, user.Email)
+
+                await EmailProvider.SendMailAsync(new EmailMessageViewModel
                 {
+                    From = EmailProvider.SMTP_USER,
+                    To = user.Email,
                     IsBodyHtml = true,
                     Body = body,
                     Subject = "Confirm your account on Got It"
-                };
+                });
 
-                return await _emailProvider.SendMailAsync(msg);
+                return ResultHelper.Succeeded(true);
             }
             catch (DuplicateDataException)
             {
@@ -122,7 +111,7 @@ namespace GotIt.BLL.Managers
                     throw new Exception("Not found User");
                 }
                     
-                int userId = _tokenManager.ExtractAttributes(_tokenManager.ValidateToken(token), new EUserType[] { user.Type }).Id; 
+                int userId = _tokenManager.ValidateToken(token, user.Type).Id; 
                 if (userId != id)
                 {
                     throw new Exception("Wrong Link");
@@ -160,7 +149,7 @@ namespace GotIt.BLL.Managers
                     throw new Exception(EResultMessage.EmailOrPasswordWrong.ToString());
                 }
 
-                return _tokenManager.GenerateUserToken(userResult);
+                return ResultHelper.Succeeded(_tokenManager.GenerateUserToken(userResult));
             }
             catch (Exception e)
             {

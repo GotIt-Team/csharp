@@ -49,8 +49,6 @@ namespace GotIt
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
 
-            services.AddScoped(typeof(EmailProvider));
-
             services.AddDbContext<GotItDbContext>(options =>
             {
                 options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()));

@@ -12,32 +12,36 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Net;
 using System.IO;
+using GotIt.Common.Enums;
 
 namespace GotIt.BLL.Managers
 {
     public class SystemManager : Repository<FeedbackEntity>
     {
-        private readonly EmailProvider _emailProvider;
 
-        public SystemManager(GotItDbContext dbContext, EmailProvider emailProvider) : base(dbContext) 
+        public SystemManager(GotItDbContext dbContext) : base(dbContext) 
         {
-            _emailProvider = emailProvider;
         }
         
         public Result<bool> AddFeedback(int userId, FeedbackViewModel feedbackViewModel)
         {
             try
             {
-                var obj = new FeedbackEntity
+                var feedback = new FeedbackEntity
                 {
                     Rate = feedbackViewModel.Rate,
                     Opinion = feedbackViewModel.Opinion,
                     UserId = userId
                 };
 
-                Add(obj);
+                Add(feedback);
                 
-                SaveChanges();
+                var result = SaveChanges();
+
+                if (!result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
                 
                 return ResultHelper.Succeeded(data: true);
             }
@@ -47,17 +51,25 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public async Task<Result<bool>> ContactUs(ContactUsViewModel contactUs)
+        public async Task<Result<bool>> ContactUs(int userId, ContactUsViewModel contactUs)
         {
             try
             {
-                MailMessage msg = new MailMessage(contactUs.Email, EmailProvider.SMTP_USER)
+                var body = File.ReadAllText("wwwroot/html/contactus.html");
+                body = body.Replace("{user-email}", contactUs.Email);
+                body = body.Replace("{user-id}", userId.ToString());
+                body = body.Replace("{user-message}", contactUs.Message);
+                
+                await EmailProvider.SendMailAsync(new EmailMessageViewModel
                 {
+                    From = contactUs.Email,
+                    To = EmailProvider.SMTP_USER,
                     Subject = contactUs.Subject,
-                    Body = contactUs.Message
-                };
+                    Body = body,
+                    IsBodyHtml = true
+                });
 
-                return await _emailProvider.SendMailAsync(msg);
+                return ResultHelper.Succeeded(true);
             }
             catch (Exception e)
             {

@@ -32,9 +32,8 @@ namespace GotIt.Configuration
                 }
 
                 string token = authToken.Substring("Bearer ".Length).Trim();
-                var claimsPrincipal = tokenManager.ValidateToken(token);
 
-                requestAttributes.CopyFrom(tokenManager.ExtractAttributes(claimsPrincipal, _userTypes));
+                requestAttributes.CopyFrom(tokenManager.ValidateToken(token, _userTypes));
             }
             catch (Exception)
             {
