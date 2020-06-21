@@ -42,7 +42,7 @@ namespace GotIt.Controllers
             return await _manager.AddUser(newUser);
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("confirm-account")]
         public Result<bool> Confirm([FromQuery]int UserId, [FromQuery]string Token)
         {

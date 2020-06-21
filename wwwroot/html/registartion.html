@@ -93,6 +93,8 @@
                 <p><span class="app-title">Got It</span> helps everyone find their lost belongings</p>
                 <p>before using our services please confirm your registration<br />by click on the button below</p>
                 <form method="get" action="{link-path}">
+                    <input type="hidden" name="userId" value="{user-id}" />
+                    <input type="hidden" name="token" value="{user-token}" />
                     <input type="submit" class="btn" value="confirm registartion" />
                 </form>
                 <p>If the link above does not work, paste this into your browser:</p>

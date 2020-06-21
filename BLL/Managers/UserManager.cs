@@ -74,18 +74,20 @@ namespace GotIt.BLL.Managers
 
                 SaveChanges();
 
-                var token = _tokenManager.GenerateUserToken(result);
-                if(!token.IsSucceeded || token.Data == null)
+                var tokenResult = _tokenManager.GenerateUserToken(result);
+                if(!tokenResult.IsSucceeded || tokenResult.Data == null)
                 {
                     // should be some logic to fix the error (user has been added and no token generated)!!
                     throw new Exception(EResultMessage.InternalServerError.ToString());
                 }
 
-                var confirmLink = string.Format("{0}/api/user/confirm-account?userId={1}&token={2}", _requestAttributes.AppBaseUrl ,user.Id, token.Data.Token);
+                var confirmLink = string.Format("{0}/api/user/confirm-account", _requestAttributes.AppBaseUrl);
                 
                 string body = File.ReadAllText("wwwroot/html/registartion.html");
                 body = body.Replace("{link-path}", confirmLink);
                 body = body.Replace("{user-name}", user.Name);
+                body = body.Replace("{user-id}", user.Id.ToString());
+                body = body.Replace("{user-token}", tokenResult.Data.Token);
 
                 MailMessage msg = new MailMessage(EmailProvider.SMTP_USER, user.Email)
                 {
