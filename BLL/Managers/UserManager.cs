@@ -114,17 +114,24 @@ namespace GotIt.BLL.Managers
             {
                 if (id == null || token == null)
                 {
-                    return ResultHelper.Failed<bool>(message: "Wrong Link");
+                    throw new Exception("Wrong Link");
                 }
                 var user = Get(u => u.Id == id);
                 if (user == null)
-                    return ResultHelper.Failed<bool>(message: "Not found User");
-                int x = _tokenManager.ExtractAttributes(_tokenManager.ValidateToken(token), new EUserType[] { user.Type }).Id; 
-                if (x!=id)
-                    return ResultHelper.Failed<bool>(message: "Wrong Link");
+                {
+                    throw new Exception("Not found User");
+                }
+                    
+                int userId = _tokenManager.ExtractAttributes(_tokenManager.ValidateToken(token), new EUserType[] { user.Type }).Id; 
+                if (userId != id)
+                {
+                    throw new Exception("Wrong Link");
+                }
+
                 user.IsConfirmed = true;
                 Update(user);
                 SaveChanges();
+
                 return ResultHelper.Succeeded(data: true);
             }
             catch (Exception e)
