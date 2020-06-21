@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GotIt.BLL.ViewModels
 {
-    public class EmailMessageViewModel
+    public class MailMessageViewModel
     {
         public string From { get; set; }
         public string To { get; set; }

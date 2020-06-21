@@ -60,10 +60,10 @@ namespace GotIt.BLL.Managers
                 body = body.Replace("{user-id}", userId.ToString());
                 body = body.Replace("{user-message}", contactUs.Message);
                 
-                await EmailProvider.SendMailAsync(new EmailMessageViewModel
+                await MailProvider.SendMailAsync(new MailMessageViewModel
                 {
                     From = contactUs.Email,
-                    To = EmailProvider.SMTP_USER,
+                    To = MailProvider.SMTP_USER,
                     Subject = contactUs.Subject,
                     Body = body,
                     IsBodyHtml = true
