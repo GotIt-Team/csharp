@@ -51,16 +51,16 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("settings")]
-        public Result<object> GetSettings()
+        public Result<UserViewModel> GetSettings([FromQuery] int UserId)
         {
-            throw new NotImplementedException();
+            return _manager.GettSettings(UserId);
         }
 
         [HttpPut]
         [Route("settings")]
-        public Result<object> EditSettings()
+        public Result<bool> EditSettings([FromQuery] int UserId, [FromBody] UserViewModel User)
         {
-            throw new NotImplementedException();
+            return _manager.EditSettings(UserId, User);
         }
 
         [HttpGet]

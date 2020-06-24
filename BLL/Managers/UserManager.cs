@@ -155,5 +155,65 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<TokenViewModel>(message: e.Message);
             }
         }
+
+        public Result<UserViewModel> GettSettings(int userId)
+        {
+            try
+            {
+                var user = Get(i => i.Id == userId);
+
+                var result = new UserViewModel
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    PhoneNumber = user.PhoneNumber,
+                    Address=user.Address,
+                    Picture=user.Picture,
+                };
+
+
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<UserViewModel>(message: e.Message);
+            }
+        }
+
+   
+
+
+
+        public Result<bool> EditSettings(int userId, UserViewModel user)
+        {
+            try
+            {
+                var data = new UserEntity
+                {
+                    Id = userId,
+                    Name = user.Name,
+                    Picture=user.Picture,
+                    Address=user.Address,
+                    PhoneNumber=user.PhoneNumber
+                   
+                };
+
+                Update(data, i => i.Name, i => i.Picture , i => i.Address , i => i.PhoneNumber);
+
+                var result = SaveChanges();
+
+                if (!result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
     }
 }
