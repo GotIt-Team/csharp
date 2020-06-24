@@ -51,16 +51,18 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("settings")]
-        public Result<UserViewModel> GetSettings([FromQuery] int UserId)
+        [Authrization(EUserType.regular ,EUserType.organization)]
+        public Result<UserViewModel> GetSettings()
         {
-            return _manager.GettSettings(UserId);
+            return _manager.GettSettings(_requestAttributes.Id);
         }
 
         [HttpPut]
         [Route("settings")]
-        public Result<bool> EditSettings([FromQuery] int UserId, [FromBody] UserViewModel User)
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<bool> EditSettings( [FromBody] UserViewModel User)
         {
-            return _manager.EditSettings(UserId, User);
+            return _manager.EditSettings(_requestAttributes.Id , User);
         }
 
         [HttpGet]

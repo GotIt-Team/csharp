@@ -170,8 +170,6 @@ namespace GotIt.BLL.Managers
                     Address=user.Address,
                     Picture=user.Picture,
                 };
-
-
                 return ResultHelper.Succeeded(result);
             }
             catch (Exception e)
@@ -179,10 +177,6 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<UserViewModel>(message: e.Message);
             }
         }
-
-   
-
-
 
         public Result<bool> EditSettings(int userId, UserViewModel user)
         {
