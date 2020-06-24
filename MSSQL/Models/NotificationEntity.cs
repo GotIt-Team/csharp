@@ -21,6 +21,7 @@ namespace GotIt.MSSQL.Models
         public bool IsSeen { get; set; }
         [Required]
         public ENotificationType Type { get; set; }
+        public DateTime? Date { get; set; }
 
         [ForeignKey("Sender")]
         public int SenderId { get; set; }

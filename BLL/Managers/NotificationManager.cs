@@ -19,7 +19,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var notifications = GetAllPaginated(n => n.ReceiverId == userId, pageNo, pageSize);
+                var notifications = GetAllPaginated(n => n.ReceiverId == userId, pageNo, pageSize, "Sender");
 
                 if(notifications.Data == null)
                 {
@@ -33,6 +33,7 @@ namespace GotIt.BLL.Managers
                     IsSeen = n.IsSeen,
                     Link = n.Link,
                     type = n.Type,
+                    Date = n.Date,
                     Sender = new UserViewModel
                     {
                         Id = n.Sender.Id,

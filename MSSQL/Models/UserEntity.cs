@@ -34,8 +34,7 @@ namespace GotIt.MSSQL.Models
         [Required]
         public string HashPassword { get; set; }
         public string PhoneNumber { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public string Address { get; set; }
         public string Picture { get; set; }
         [Required]
         public EGender Gender { get; set; }

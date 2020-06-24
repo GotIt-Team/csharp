@@ -32,7 +32,7 @@ namespace GotIt.Controllers
         /// <param name="pageSize">number of items on the page</param>
         /// <returns></returns>
         [HttpGet]
-        [Authrization(EUserType.regular)]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<List<NotificationViewModel>> GetNotifications([FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _notificationManager.GetUserNotifications(_requestAttributes.Id, pageNo, pageSize);
@@ -46,7 +46,7 @@ namespace GotIt.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("{id}/read")]
-        [Authrization(EUserType.regular)]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<bool> ReadNotification([FromRoute] int id, [FromBody] NotificationViewModel notification)
         {
             return _notificationManager.ReadNotification(_requestAttributes.Id, id, notification);

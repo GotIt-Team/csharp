@@ -14,6 +14,7 @@ namespace GotIt.BLL.ViewModels
         public string Content { get; set; }
         public bool IsSeen { get; set; }
         public ENotificationType type { get; set; }
+        public DateTime? Date { get; set; }
         public UserViewModel Sender { get; set; }
     }
 }

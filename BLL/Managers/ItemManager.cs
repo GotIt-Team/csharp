@@ -40,7 +40,7 @@ namespace GotIt.BLL.Managers
                         Name = i.User.Name,
                         Picture = i.User.Picture
                     }
-                }).ToList();
+                }).OrderByDescending(i => i.CreationDate).ToList();
 
                 return ResultHelper.Succeeded(result, items.Count);
             }

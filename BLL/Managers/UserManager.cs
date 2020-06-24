@@ -31,10 +31,9 @@ namespace GotIt.BLL.Managers
                     Name = userViewModel.Name,
                     Email = userViewModel.Email,
                     PhoneNumber = userViewModel.PhoneNumber,
-                    City = userViewModel.City,
+                    Address = userViewModel.Address,
                     Type = userViewModel.Type,
                     Picture = userViewModel.Picture,
-                    Country = userViewModel.Country,
                     Gender = userViewModel.Gender,
                 };
                 
