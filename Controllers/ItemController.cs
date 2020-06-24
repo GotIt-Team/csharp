@@ -18,11 +18,12 @@ namespace GotIt.Controllers
     {
         private readonly ItemManager _manager;
         private readonly RequestAttributes _requestAttributes;
-
-        public ItemController(RequestAttributes requestAttributes, ItemManager manager)
+        private readonly RequestManager _requestManager;
+        public ItemController(RequestAttributes requestAttributes, ItemManager manager, RequestManager requestManager)
         {
             _requestAttributes = requestAttributes;
             _manager = manager;
+            _requestManager = requestManager;
         }
 
         [HttpGet]
@@ -64,9 +65,18 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("request")]
-        public Result<object> ItemRequest()
+        //[Authrization(EUserType.regular)]
+        public Result<bool> ItemRequest([FromBody]RequestViewModel request)
         {
-            throw new NotImplementedException();
+            return _requestManager.itemRequest(request,_requestAttributes.Id);
+        }
+
+        [HttpPost]
+        [Route("replyRequest")]
+        //[Authrization(EUserType.organization)]
+        public Result<bool> ReplyRequest([FromBody]RequestViewModel request)
+        {
+            return _requestManager.ReplyRequest(request, _requestAttributes.Id);
         }
     }
 }
