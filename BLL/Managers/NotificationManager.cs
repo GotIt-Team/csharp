@@ -79,5 +79,50 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed(false, message: e.Message);
             }
         }
+        public Result<bool> AddNotification(NotificationViewModel notification, int receiverId)
+        {
+            try
+            {
+                var model = new NotificationEntity
+                {
+                    IsSeen = false,
+                    Content = notification.Content,
+                    Link = notification.Link,
+                    ReceiverId = receiverId,
+                    SenderId = notification.Sender.Id,
+                    Type = notification.type,
+                    Date = DateTime.UtcNow
+                };
+                Add(model);
+                var result = SaveChanges();
+                if (!result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed(false, message: e.Message);
+            }
+        }
+
+        public Result<bool> RequestNotification(NotificationEntity notification)
+        {
+            try
+            {
+                Add(notification);
+                var result = SaveChanges();
+                if (!result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed(false, message: e.Message);
+            }
+        }
     }
 }
