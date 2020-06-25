@@ -51,7 +51,7 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("settings")]
-        [Authrization(EUserType.regular ,EUserType.organization)]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<UserViewModel> GetSettings()
         {
             return _manager.GettSettings(_requestAttributes.Id);
@@ -60,13 +60,14 @@ namespace GotIt.Controllers
         [HttpPut]
         [Route("settings")]
         [Authrization(EUserType.regular, EUserType.organization)]
-        public Result<bool> EditSettings( [FromBody] UserViewModel User)
+        public Result<bool> EditSettings([FromBody] UserViewModel User)
         {
             return _manager.EditSettings(_requestAttributes.Id , User);
         }
 
         [HttpGet]
         [Route("items")]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<List<ItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _itemManager.GetItems(_requestAttributes.Id, isLost, pageNo, pageSize);
