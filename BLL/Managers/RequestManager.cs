@@ -18,7 +18,7 @@ namespace GotIt.BLL.Managers
             _notificationManager = notificationManager;
         }
 
-        public Result<bool> itemRequest(RequestViewModel requestViewModel,int senderId)
+        public Result<bool> ItemRequest(int senderId, RequestViewModel requestViewModel)
         {
             try
             {
@@ -35,17 +35,19 @@ namespace GotIt.BLL.Managers
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
-                var notification = new NotificationEntity
+
+                var notification = new NotificationViewModel
                 {
                     Link = "link ",
                     Content = " content ",
-                    IsSeen = false,
-                    SenderId = senderId,
-                    ReceiverId = requestViewModel.User.Id,
+                    Sender = new UserViewModel
+                    {
+                        Id = senderId
+                    },
                     Type = ENotificationType.Request
                 };
                 
-                return _notificationManager.RequestNotification(notification);
+                return _notificationManager.AddNotification(requestViewModel.User.Id, notification);
             }
             catch (Exception e)
             {
@@ -53,7 +55,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<bool> ReplyRequest(RequestViewModel requestViewModel, int senderId)
+        public Result<bool> ReplyRequest(int senderId, RequestViewModel requestViewModel)
         {
             try
             {
@@ -68,18 +70,19 @@ namespace GotIt.BLL.Managers
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
-                var notification = new NotificationEntity
+
+                var notification = new NotificationViewModel
                 {
                     Link = "link ",
                     Content = " content ",
-                    IsSeen = false,
-                    SenderId = senderId,
-                    ReceiverId = request.Item.User.Id,
+                    Sender = new UserViewModel
+                    {
+                        Id = senderId
+                    },
                     Type = ENotificationType.Request,
-                    Date = DateTime.UtcNow
                 };
 
-                return _notificationManager.RequestNotification(notification);
+                return _notificationManager.AddNotification(request.Item.User.Id, notification);
             }
             catch (Exception e)
             {

@@ -32,7 +32,7 @@ namespace GotIt.BLL.Managers
                     Content = n.Content,
                     IsSeen = n.IsSeen,
                     Link = n.Link,
-                    type = n.Type,
+                    Type = n.Type,
                     Date = n.Date,
                     Sender = new UserViewModel
                     {
@@ -79,7 +79,8 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed(false, message: e.Message);
             }
         }
-        public Result<bool> AddNotification(NotificationViewModel notification, int receiverId)
+
+        public Result<bool> AddNotification(int receiverId, NotificationViewModel notification)
         {
             try
             {
@@ -90,28 +91,11 @@ namespace GotIt.BLL.Managers
                     Link = notification.Link,
                     ReceiverId = receiverId,
                     SenderId = notification.Sender.Id,
-                    Type = notification.type,
+                    Type = notification.Type,
                     Date = DateTime.UtcNow
                 };
-                Add(model);
-                var result = SaveChanges();
-                if (!result)
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
-                return ResultHelper.Succeeded(result);
-            }
-            catch (Exception e)
-            {
-                return ResultHelper.Failed(false, message: e.Message);
-            }
-        }
 
-        public Result<bool> RequestNotification(NotificationEntity notification)
-        {
-            try
-            {
-                Add(notification);
+                Add(model);
                 var result = SaveChanges();
                 if (!result)
                 {

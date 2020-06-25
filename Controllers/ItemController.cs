@@ -65,18 +65,18 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("request")]
-        //[Authrization(EUserType.regular)]
+        [Authrization(EUserType.regular)]
         public Result<bool> ItemRequest([FromBody]RequestViewModel request)
         {
-            return _requestManager.itemRequest(request,_requestAttributes.Id);
+            return _requestManager.ItemRequest(_requestAttributes.Id, request);
         }
 
         [HttpPost]
         [Route("replyRequest")]
-        //[Authrization(EUserType.organization)]
+        [Authrization(EUserType.organization)]
         public Result<bool> ReplyRequest([FromBody]RequestViewModel request)
         {
-            return _requestManager.ReplyRequest(request, _requestAttributes.Id);
+            return _requestManager.ReplyRequest(_requestAttributes.Id, request);
         }
     }
 }
