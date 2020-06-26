@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GotIt.Common.Enums;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,13 +32,15 @@ namespace GotIt.Common.Helper
 
     static class ResultHelper
     {
-        public static Result<TData> Succeeded<TData>(TData data = default, int? count = null, string message = "Process done successfuly")
+        public static Result<TData> Succeeded<TData>(TData data = default, int? count = null, string message = "")
         {
+            if (string.IsNullOrWhiteSpace(message)) message = EResultMessage.ProcessSuccess.ToString();
             return new Result<TData>(data, count, message, true);
         }
 
-        public static Result<TData> Failed<TData>(TData data = default, int? count = null, string message = "Process Failed!")
+        public static Result<TData> Failed<TData>(TData data = default, int? count = null, string message = "")
         {
+            if (string.IsNullOrWhiteSpace(message)) message = EResultMessage.ProcessFailed.ToString();
             return new Result<TData>(data, count, message, false);
         }
     }

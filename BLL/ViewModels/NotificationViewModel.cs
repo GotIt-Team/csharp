@@ -13,7 +13,7 @@ namespace GotIt.BLL.ViewModels
         public string Link { get; set; }
         public string Content { get; set; }
         public bool IsSeen { get; set; }
-        public ENotificationType type { get; set; }
+        public ENotificationType Type { get; set; }
         public DateTime? Date { get; set; }
         public UserViewModel Sender { get; set; }
     }

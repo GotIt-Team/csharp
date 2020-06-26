@@ -122,8 +122,11 @@ namespace GotIt.BLL.Managers
                 // result
                 return new TokenViewModel
                 {
+                    Id = user.Id,
                     Name = user.Name,
                     Picture = user.Picture,
+                    Address = user.Address,
+                    PhoneNumber = user.PhoneNumber,
                     Token = new JwtSecurityTokenHandler().WriteToken(token)
                 };
             }

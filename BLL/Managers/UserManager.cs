@@ -96,6 +96,42 @@ namespace GotIt.BLL.Managers
             }
         }
 
+        public Result<bool> ChangePassword(int userId, UserPasswordViewModel password)
+        {
+            try
+            {
+                if(password.NewPassword != password.RepeatedNewPassword)
+                {
+                    throw new Exception(EResultMessage.InvalidData.ToString());
+                }
+
+                var user = Get(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new Exception(EResultMessage.NotFound.ToString());
+                }
+
+                if(!Protected.Validate(password.OldPassword, user.HashPassword))
+                {
+                    throw new Exception(EResultMessage.WrongPassword.ToString());
+                }
+
+                user.HashPassword = Protected.CreatePasswordHash(password.NewPassword);
+                Update(user);
+
+                if(!SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                return ResultHelper.Succeeded(true);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
         public Result<bool> Confirm(int? id, string token)
         {
             try
@@ -119,7 +155,6 @@ namespace GotIt.BLL.Managers
                 user.IsConfirmed = true;
                 Update(user);
                 SaveChanges();
-
                 return ResultHelper.Succeeded(data: true);
             }
             catch (Exception e)
