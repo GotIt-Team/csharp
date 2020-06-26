@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GotIt.BLL.Managers;
+using GotIt.BLL.ViewModels;
 using GotIt.Common.Helper;
 using GotIt.MSSQL;
 using Microsoft.AspNetCore.Http;
@@ -13,14 +15,19 @@ namespace GotIt.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        public ChatController()
+        private readonly RequestAttributes _requestAttributes;
+        private readonly ChatManager _manager;
+        public ChatController(RequestAttributes requestAttributes , ChatManager manager)
         {
+            _requestAttributes = requestAttributes;
+            _manager = manager;
         }
 
         [HttpGet]
-        public Result<object> GetChats()
+        [Route("{id}")]
+        public Result<List<ChatViewModel>> GetChats(int id)
         {
-            throw new NotImplementedException();
+            return _manager.GetChatList(id);
         }
 
         [HttpGet]
