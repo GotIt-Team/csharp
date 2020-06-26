@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using GotIt.BLL.Managers;
 using GotIt.BLL.ViewModels;
+using GotIt.Common.Enums;
 using GotIt.Common.Helper;
+using GotIt.Configuration;
 using GotIt.MSSQL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +26,10 @@ namespace GotIt.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public Result<List<ChatViewModel>> GetChats(int id)
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<List<ChatViewModel>> GetChats()
         {
-            return _manager.GetChatList(id);
+            return _manager.GetChatList(_requestAttributes.Id);
         }
 
         [HttpGet]

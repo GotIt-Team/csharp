@@ -23,18 +23,18 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var chatList = GetAll(i => i.Users.Any(j=>j.UserId == userId),
-                    "Messages", "Users.User");
+                var chatList = GetAll(i => i.Users.Any(j => j.UserId == userId),
+                    "Messages.User", "Users.User");
 
-                if (chatList== null)
-                {   
+                if (chatList == null)
+                {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
                 var result = chatList.Select(i =>
                 {
                     var user = i.Users.FirstOrDefault(j => userId != j.UserId).User;
-                    var lastMessage = i.Messages.OrderByDescending(j=>j.Time).FirstOrDefault();
+                    var lastMessage = i.Messages.OrderByDescending(j => j.Time).FirstOrDefault();
 
                     return new ChatViewModel
                     {
@@ -45,7 +45,7 @@ namespace GotIt.BLL.Managers
                             Name = user.Name,
                             Picture = user.Picture
                         },
-                        LastMessage =lastMessage==null?null:new MessageViewModel
+                        LastMessage = lastMessage == null ? null : new MessageViewModel
                         {
                             Content = lastMessage.Content,
                             Time = lastMessage.Time,
@@ -58,9 +58,7 @@ namespace GotIt.BLL.Managers
                             }
                         }
                     };
-                   
-                }).ToList() ;
-                
+                }).ToList();
 
                 return ResultHelper.Succeeded(result);
             }
