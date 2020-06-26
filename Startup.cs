@@ -75,6 +75,8 @@ namespace GotIt
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseMiddleware<RequestMiddleware>();
 
             app.UseRouting();

@@ -24,5 +24,6 @@ namespace GotIt.Common.Enums
         UserNotConfirmed = 16,
         PasswordNotMatched = 16,
         NotUserType = 16,
+        WrongPassword = 17,
     }
 }

@@ -27,7 +27,7 @@ namespace GotIt.Controllers
         }
 
         [HttpGet]
-        [Authrization(EUserType.regular)]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<List<ItemViewModel>> GetItems([FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _manager.GetItems(null, true, pageNo, pageSize);
@@ -35,7 +35,7 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        [Authrization(EUserType.regular)]
+        [Authrization(EUserType.regular, EUserType.organization)]
         public Result<ItemDetailsViewModel> GetItem([FromRoute] int id)
         {
             return _manager.GetItemDetails(id);
@@ -72,7 +72,7 @@ namespace GotIt.Controllers
         }
 
         [HttpPost]
-        [Route("replyRequest")]
+        [Route("request/reply")]
         [Authrization(EUserType.organization)]
         public Result<bool> ReplyRequest([FromBody]RequestViewModel request)
         {

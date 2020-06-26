@@ -42,14 +42,13 @@ namespace GotIt.Controllers
         /// Mark notification as read (isSeen = true)
         /// </summary>
         /// <param name="id">notification id</param>
-        /// <param name="notification">notification model</param>
         /// <returns></returns>
         [HttpPut]
         [Route("{id}/read")]
         [Authrization(EUserType.regular, EUserType.organization)]
-        public Result<bool> ReadNotification([FromRoute] int id, [FromBody] NotificationViewModel notification)
+        public Result<bool> ReadNotification([FromRoute] int id)
         {
-            return _notificationManager.ReadNotification(_requestAttributes.Id, id, notification);
+            return _notificationManager.ReadNotification(_requestAttributes.Id, id);
         }
     }
 }

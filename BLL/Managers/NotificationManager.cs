@@ -50,7 +50,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<bool> ReadNotification(int userId, int notificationId, NotificationViewModel notification)
+        public Result<bool> ReadNotification(int userId, int notificationId)
         {
             try
             {
@@ -58,13 +58,10 @@ namespace GotIt.BLL.Managers
                 {
                     Id = notificationId,
                     IsSeen = true,
-                    Content = notification.Content,
-                    Link = notification.Link,
                     ReceiverId = userId,
-                    SenderId = notification.Sender.Id
                 };
-                Update(model);
 
+                Update(model, n => n.IsSeen);
                 var result = SaveChanges();
 
                 if (!result)

@@ -65,6 +65,14 @@ namespace GotIt.Controllers
             return _manager.EditSettings(_requestAttributes.Id , User);
         }
 
+        [HttpPut]
+        [Route("change-password")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<bool> ChangePassword([FromBody] UserPasswordViewModel password)
+        {
+            return _manager.ChangePassword(_requestAttributes.Id, password);
+        }
+
         [HttpGet]
         [Route("items")]
         [Authrization(EUserType.regular, EUserType.organization)]
