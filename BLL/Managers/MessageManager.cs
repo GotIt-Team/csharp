@@ -19,7 +19,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var Messages = GetAll(i => i.Id == chatId);
+                var Messages = GetAll(i => i.ChatId == chatId);
 
                 if (Messages == null)
                 {

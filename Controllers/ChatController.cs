@@ -36,9 +36,9 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public Result<List<MessageViewModel>> GetChatMessages()
+        public Result<List<MessageViewModel>> GetChatMessages([FromRoute] int id)
         {
-            return _messageManager.GetMessages(_requestAttributes.Id);
+            return _messageManager.GetMessages(id);
         }
     }
 }
