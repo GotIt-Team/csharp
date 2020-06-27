@@ -16,7 +16,8 @@ namespace GotIt.BLL.Managers
     {
         private readonly RequestAttributes _requestAttributes;
 
-        public ChatManager(GotItDbContext dbContext , RequestAttributes requestAttributes) : base(dbContext) {
+        public ChatManager(GotItDbContext dbContext, RequestAttributes requestAttributes) : base(dbContext)
+        {
             _requestAttributes = requestAttributes;
         }
         public Result<List<ChatViewModel>> GetChatList(int userId)
@@ -67,41 +68,5 @@ namespace GotIt.BLL.Managers
                 return ResultHelper.Failed<List<ChatViewModel>>(message: e.Message);
             }
         }
-
-
-        public Result<List<MessageViewModel>> GetMessages(int chatId)
-        {
-            try
-            {
-                var Messages = Get(i => i.Id==chatId,
-                    "Messages", "Users.User");
-
-                if (Messages == null)
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
-
-                var result = Messages.Messages.Select(i =>
-                {
-                    return new MessageViewModel
-                    {
-                        Id = i.Id,
-                        Content=i.Content,
-                        Time=i.Time,
-                        Type=i.Type,
-                       // SenderId = i.User.Id,  
-                       SenderId=i.UserId
-                    };
-                }).ToList();
-
-                return ResultHelper.Succeeded(result);
-            }
-            catch (Exception e)
-            {
-                return ResultHelper.Failed<List<MessageViewModel>>(message: e.Message);
-            }
-        }
-
-
     }
 }

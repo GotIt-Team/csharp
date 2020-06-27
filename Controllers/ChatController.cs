@@ -19,10 +19,12 @@ namespace GotIt.Controllers
     {
         private readonly RequestAttributes _requestAttributes;
         private readonly ChatManager _manager;
-        public ChatController(RequestAttributes requestAttributes , ChatManager manager)
+        private readonly MessageManager _messageManager;
+        public ChatController(RequestAttributes requestAttributes , ChatManager manager , MessageManager messageManager)
         {
             _requestAttributes = requestAttributes;
             _manager = manager;
+            _messageManager = messageManager;
         }
 
         [HttpGet]
@@ -36,7 +38,7 @@ namespace GotIt.Controllers
         [Route("{id}")]
         public Result<List<MessageViewModel>> GetChatMessages()
         {
-            return _manager.GetMessages(_requestAttributes.Id);
+            return _messageManager.GetMessages(_requestAttributes.Id);
         }
     }
 }
