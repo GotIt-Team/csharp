@@ -9,6 +9,7 @@ namespace GotIt.BLL.ViewModels
         public string Content { get; set; }
         public EContentType Type { get; set; }
         public DateTime Time { get; set; }
+        public int SenderId { get; set; }
         public UserViewModel Sender { get; set; }
     }
 }

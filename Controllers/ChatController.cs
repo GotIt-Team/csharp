@@ -34,9 +34,9 @@ namespace GotIt.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public Result<object> GetChat([FromRoute] int id)
+        public Result<List<MessageViewModel>> GetChatMessages()
         {
-            throw new NotImplementedException();
+            return _manager.GetMessages(_requestAttributes.Id);
         }
     }
 }
