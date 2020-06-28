@@ -43,8 +43,6 @@ namespace GotIt
             services.AddScoped(typeof(ItemManager));
             services.AddScoped(typeof(MessageManager));
             services.AddScoped(typeof(NotificationManager));
-            services.AddScoped(typeof(ObjectManager));
-            services.AddScoped(typeof(PersonManager));
             services.AddScoped(typeof(RequestManager));
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));

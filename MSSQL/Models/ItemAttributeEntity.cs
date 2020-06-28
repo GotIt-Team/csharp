@@ -8,18 +8,16 @@ using System.Threading.Tasks;
 
 namespace GotIt.MSSQL.Models
 {
-    public class ObjectAttributeEntity
+    public class ItemAttributeEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
-        [Required]
-        public EObjectAttribute Key { get; set; }
-        [Required]
+        public EAttribute Key { get; set; }
         public string Value { get; set; }
 
-        [ForeignKey("Object")]
-        public int ObjectId { get; set; }
-        public virtual ObjectEntity Object { get; set; }
+        [ForeignKey("Item")]
+        public int ItemId { get; set; }
+        public virtual ItemEntity Item { get; set; }
     }
 }

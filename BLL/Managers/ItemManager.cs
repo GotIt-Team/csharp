@@ -21,7 +21,7 @@ namespace GotIt.BLL.Managers
             try
             {
                 var items = GetAllPaginated(i => i.UserId == (userId ?? i.UserId) && i.IsLost == isLost && i.MatchDate == null, pageNo, pageSize,
-                    "Person.Images", "Object", "User");
+                    "Images", "User");
                 
                 if (items.Data == null)
                 {
@@ -34,7 +34,7 @@ namespace GotIt.BLL.Managers
                     Content = i.Content,
                     CreationDate = i.CreationDate,
                     Type = i.Type,
-                    Image = i.Person != null ? i.Person.Images?.FirstOrDefault()?.Image : i.Object?.Image,
+                    Image = i.Images.FirstOrDefault()?.Image,
                     User = new UserViewModel
                     {
                         Name = i.User.Name,
@@ -54,7 +54,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var item = Get(i => i.Id == id, "Person.Images", "Object.Attributes", "User", "Comments.User");
+                var item = Get(i => i.Id == id, "Images", "Attributes", "User", "Comments.User");
 
                 if (item == null)
                 {
@@ -68,23 +68,9 @@ namespace GotIt.BLL.Managers
                     CreationDate = item.CreationDate,
                     Type = item.Type,
                     IsLost = item.IsLost,
-                    
-                    Person = item.Person != null ? new PersonViewModel
-                    {
-                        Id = item.Person.Id,
-                        Name = item.Person.Name,
-                        Gender = item.Person.Gender,
-                        AgeStage = item.Person.AgeStage
-                    } : null,
-                    
-                    Object = item.Object != null ? new ObjectViewModel
-                    {
-                        Id = item.Object.Id,
-                        Class = item.Object.Class,
-                        Attributes = item.Object.Attributes.ToDictionary(a => a.Key, a => a.Value)
-                    } : null,
+                    Attributes = item.Attributes.ToDictionary(i => i.Key, i => i.Value),
 
-                    Images = item.Person != null ? item.Person?.Images.Select(i => i.Image).ToList() : new List<string> { item.Object?.Image },
+                    Images = item.Images.Select(i => i.Image).ToList(),
                     
                     User = new UserViewModel
                     {
@@ -113,6 +99,15 @@ namespace GotIt.BLL.Managers
             {
                 return ResultHelper.Failed<ItemDetailsViewModel>(message: e.Message);
             }
+        }
+
+        public bool Similar(ItemEntity item1, ItemEntity item2)
+        {
+            if (item1.Attributes.Count < item1.Attributes.Count)
+            {
+                return item1.Attributes.All(i => item2.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
+            }
+            return item2.Attributes.All(i => item1.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
         }
 
         public Result<bool> EditItem(int userId, int itemId, ItemViewModel item)

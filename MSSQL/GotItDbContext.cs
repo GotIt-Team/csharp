@@ -15,12 +15,10 @@ namespace GotIt.MSSQL
         public DbSet<CommentEntity> Comments { get; set; }
         public DbSet<FeedbackEntity> Feedbacks { get; set; }
         public DbSet<ItemEntity> Items { get; set; }
+        public DbSet<ItemAttributeEntity> ItemAttributes { get; set; }
+        public DbSet<ItemImageEntity> ItemImages { get; set; }
         public DbSet<MessageEntity> Messages { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
-        public DbSet<ObjectEntity> Objects { get; set; }
-        public DbSet<ObjectAttributeEntity> ObjectAttributes { get; set; }
-        public DbSet<PersonEntity> Persons { get; set; }
-        public DbSet<PersonImageEntity> PersonImages { get; set; }
         public DbSet<ProbablyMatchEntity> ProbablyMatches { get; set; }
         public DbSet<RequestEntity> Requests { get; set; }
         public DbSet<UserChatEntity> UserChats { get; set; }

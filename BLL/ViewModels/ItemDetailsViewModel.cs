@@ -14,8 +14,7 @@ namespace GotIt.BLL.ViewModels
         public bool IsLost { get; set; }
         public EItemType Type { get; set; }
         public List<string> Images { get; set; }
-        public PersonViewModel Person { get; set; }
-        public ObjectViewModel Object { get; set; }
+        public Dictionary<EAttribute, string> Attributes { get; set; }
         public List<CommentViewModel> Comments { get; set; }
         public UserViewModel User { get; set; }
     }

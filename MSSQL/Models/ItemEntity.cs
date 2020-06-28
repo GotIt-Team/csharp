@@ -30,6 +30,7 @@ namespace GotIt.MSSQL.Models
         [Required]
         public EItemType Type { get; set; }
         public DateTime? MatchDate { get; set; }
+        public string Embeddings { get; set; }
 
         [ForeignKey("MatchedItem")]     
         public int? MatchedItemId { get; set; }
@@ -39,10 +40,10 @@ namespace GotIt.MSSQL.Models
         public int UserId { get; set; }
         public virtual UserEntity User { get; set; }
 
-        public virtual PersonEntity Person { get; set; }
-        public virtual ObjectEntity Object { get; set; }
         public virtual ItemEntity InverseMatched { get; set; }
 
+        public virtual ICollection<ItemImageEntity> Images { get; set; }
+        public virtual ICollection<ItemAttributeEntity> Attributes { get; set; }
         public virtual ICollection<ProbablyMatchEntity> ProbablyMatched { get; set; }
         public virtual ICollection<ProbablyMatchEntity> InverseProbablyMatched { get; set; }
         public virtual ICollection<RequestEntity> Requests { get; set; }
