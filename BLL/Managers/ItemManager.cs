@@ -6,14 +6,22 @@ using GotIt.MSSQL.Models;
 using GotIt.MSSQL.Repository;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace GotIt.BLL.Managers
 {
     public class ItemManager : Repository<ItemEntity>
     {
-        public ItemManager(GotItDbContext dbContext) : base(dbContext) {}
+        private readonly ProbablyMatchManager _probablyMatchManager;
+        private readonly NotificationManager _notificationManager;
+        public ItemManager(GotItDbContext dbContext , ProbablyMatchManager probablyMatchManager , NotificationManager notificationManager) : base(dbContext) {
+            _probablyMatchManager = probablyMatchManager;
+            _notificationManager = notificationManager;
+        }
 
 
         public Result<List<ItemViewModel>> GetItems(int? userId, bool isLost, int pageNo, int pageSize)
@@ -101,13 +109,64 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public bool Similar(ItemEntity item1, ItemEntity item2)
+        public async Task Match(ItemEntity item)
         {
-            if (item1.Attributes.Count < item1.Attributes.Count)
+            try
             {
-                return item1.Attributes.All(i => item2.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
+                var data = GetAll(i => i.Type == item.Type && i.IsLost != item.IsLost);
+                data.Where(k =>
+                {
+                    if (item.Attributes.Count < k.Attributes.Count)
+                    {
+                        return item.Attributes.All(i => k.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
+                    }
+                    return k.Attributes.All(i => item.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
+                }).ToList();
+                var client = new HttpClient();
+                client.BaseAddress = new Uri("http://localhost:54040/api/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.PostAsJsonAsync(" ", data);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception(response.StatusCode.ToString());
+                }
+                var result = await response.Content.ReadAsAsync<Result<MatchResultViewModel>>();
+                if (!result.IsSucceeded)
+                {
+                    throw new Exception(result.Message);
+                }
+                item.Embeddings = result.Data.Embeddings;
+                Update(item, i => i.Embeddings);
+                if(result.Data.Scores.Count==0)
+                {
+                    return;
+                }
+                var propMatch = result.Data.Scores.Select(i => new ProbablyMatchEntity
+                {
+                    ItemId = item.Id,
+                    MatchedItemId = i.ItemId,
+                    Score = i.Score
+                }).ToList();
+                _probablyMatchManager.Add(propMatch);
+                _notificationManager.AddNotification(item.UserId, new NotificationViewModel
+                {
+                    Content = "matched item",
+                    Link = "",
+                    Type = ENotificationType.Match
+                }) ;
+                var _result = SaveChanges();
+                if (!_result)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
             }
-            return item2.Attributes.All(i => item1.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return ;
+            }
+            
         }
 
         public Result<bool> EditItem(int userId, int itemId, ItemViewModel item)
@@ -131,6 +190,44 @@ namespace GotIt.BLL.Managers
                 }
 
                 return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
+        public Result<bool> AddItem(int userId,  ItemDetailsViewModel item)
+        {
+            try
+            {
+                var data = new ItemEntity
+                {
+                    Id = item.Id,
+                    Content = item.Content,
+                    IsLost = item.IsLost,
+                    CreationDate = item.CreationDate,
+                    Type = item.Type,
+                    Embeddings = item.Embeddings,
+                    Attributes = item.Attributes.Select(i => new ItemAttributeEntity
+                    {
+                        Key = i.Key,
+                        Value = i.Value,
+                    }).ToHashSet(),
+                    UserId = userId,
+                    Images = item.Images.Select(i => new ItemImageEntity
+                    {
+                        Image = i
+                    }).ToHashSet()
+                };
+
+                var result = Add(data);
+                if (result==null || !SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                Task.Run(() => Match(data));
+                return ResultHelper.Succeeded(true);
             }
             catch (Exception e)
             {

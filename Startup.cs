@@ -46,6 +46,7 @@ namespace GotIt
             services.AddScoped(typeof(RequestManager));
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
+            services.AddScoped(typeof(ProbablyMatchManager));
 
             services.AddDbContext<GotItDbContext>(options =>
             {

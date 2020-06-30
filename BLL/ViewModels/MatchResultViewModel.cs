@@ -7,7 +7,7 @@ namespace GotIt.BLL.ViewModels
 {
     public class MatchResultViewModel
     {
-        public List<ScoreViewModel> Score { get; set; }
+        public List<ScoreViewModel> Scores { get; set; }
         public string Embeddings { get; set; }
     }
 

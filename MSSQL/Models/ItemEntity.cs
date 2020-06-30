@@ -17,6 +17,7 @@ namespace GotIt.MSSQL.Models
             InverseProbablyMatched = new HashSet<ProbablyMatchEntity>();
             Requests = new HashSet<RequestEntity>();
             Comments = new HashSet<CommentEntity>();
+            Attributes = new HashSet<ItemAttributeEntity>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

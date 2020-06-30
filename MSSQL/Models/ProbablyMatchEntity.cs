@@ -13,6 +13,7 @@ namespace GotIt.MSSQL.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
+        public double Score { get; set; } 
 
         [ForeignKey("Item")]
         public int ItemId { get; set; }
