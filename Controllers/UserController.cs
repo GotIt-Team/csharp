@@ -19,13 +19,15 @@ namespace GotIt.Controllers
     {
         private readonly UserManager _manager;
         private readonly ItemManager _itemManager;
+        private readonly RequestManager _requestManager;
         private readonly RequestAttributes _requestAttributes;
 
-        public UserController(RequestAttributes requestAttributes, UserManager manager, ItemManager itemManager)
+        public UserController(RequestAttributes requestAttributes, UserManager manager, ItemManager itemManager, RequestManager requestManager)
         {
             _requestAttributes = requestAttributes;
             _manager = manager;
             _itemManager = itemManager;
+            _requestManager = requestManager;
         }
 
         [HttpPost]
@@ -79,6 +81,22 @@ namespace GotIt.Controllers
         public Result<List<ItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _itemManager.GetItems(_requestAttributes.Id, isLost, pageNo, pageSize);
+        }
+
+        [HttpGet]
+        [Route("requests")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<List<RequestViewModel>> GetRequests([FromQuery] ERequestState? state)
+        {
+            return _requestManager.GetRequests(_requestAttributes.Id, _requestAttributes.Type, state);
+        }
+
+        [HttpDelete]
+        [Route("request/{id}")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<bool> DeleteRequest([FromRoute] int id, [FromQuery] ERequestState state)
+        {
+            return _requestManager.DeleteRequest(_requestAttributes.Id, id, state);
         }
     }
 }

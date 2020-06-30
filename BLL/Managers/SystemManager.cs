@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Net;
 using System.IO;
 using GotIt.Common.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace GotIt.BLL.Managers
 {
@@ -60,7 +61,7 @@ namespace GotIt.BLL.Managers
                 body = body.Replace("{user-id}", userId.ToString());
                 body = body.Replace("{user-message}", contactUs.Message);
                 
-                await MailProvider.SendMailAsync(new MailMessageViewModel
+                await MailProvider.SendAsync(new MailMessageViewModel
                 {
                     From = contactUs.Email,
                     To = MailProvider.SMTP_USER,
@@ -74,6 +75,46 @@ namespace GotIt.BLL.Managers
             catch (Exception e)
             {
                 return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
+        public Result<List<string>> UploadImages(string basePath, IFormFileCollection files)
+        {
+            try
+            {
+                var result = new List<string>();
+                foreach (var file in files)
+                {
+                    byte[] fileData = null;
+                    const int maxContentLength = 1024 * 1024 * 3; //Size = 3 MB  
+                    var allowedFileExtensions = new List<string> { "png", "jpg", "jpeg", "gif" };
+                    var ext = file.FileName.Substring(file.FileName.LastIndexOf('.') + 1);
+                    var extension = ext.ToLower();
+                    if (!allowedFileExtensions.Contains(extension))
+                    {
+                        throw new Exception(EResultMessage.InvalidExtension.ToString());
+                    }
+                    if (file.Length > maxContentLength)
+                    {
+                        throw new Exception(EResultMessage.ExceedMaxContent.ToString());
+                    }
+
+                    using (var binaryReader = new BinaryReader(file.OpenReadStream()))
+                    {
+                        fileData = binaryReader.ReadBytes((int)file.Length);
+                    }
+
+                    var fileName = string.Format("{0}{1}.{2}", Path.GetFileNameWithoutExtension(file.FileName), DateTime.UtcNow.ToString("yyyyMMdd-HHmmss.fff"), extension);
+                    var path = string.Format("/images/{0}", fileName);
+                    File.WriteAllBytes("wwwroot" + path, fileData);
+                    result.Add(basePath + path);
+                }
+
+                return ResultHelper.Succeeded(result, result.Count);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<List<string>>(message: e.Message);
             }
         }
     }

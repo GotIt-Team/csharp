@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GotIt.BLL.Managers;
@@ -40,6 +41,15 @@ namespace GotIt.Controllers
         public async Task<Result<bool>> ContactUs([FromBody] ContactUsViewModel message)
         {
             return await _systemManager.ContactUs(_requestAttributes.Id, message);
+        }
+
+        [HttpPost]
+        [Route("upload-image")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<List<string>> UploadImage()
+        {
+            var files = HttpContext.Request.Form.Files;
+            return _systemManager.UploadImages(_requestAttributes.AppBaseUrl, files);
         }
     }
 }

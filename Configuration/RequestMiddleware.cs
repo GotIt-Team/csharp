@@ -24,15 +24,10 @@ namespace GotIt.Configuration
             _requestAttributes = requestAttributes;
             BeforExecution(httpContext);
             await _next(httpContext);
-            AfterExecution(httpContext);
         }
         private void BeforExecution(HttpContext httpContext)
         {
             _requestAttributes.AppBaseUrl = String.Format("{0}://{1}", httpContext.Request.Scheme, httpContext.Request.Host.Value);
-        }
-
-        private void AfterExecution(HttpContext httpContext)
-        {
         }
     }
 }

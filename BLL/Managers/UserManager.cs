@@ -75,7 +75,7 @@ namespace GotIt.BLL.Managers
                 body = body.Replace("{user-token}", token);
 
 
-                await MailProvider.SendMailAsync(new MailMessageViewModel
+                await MailProvider.SendAsync(new MailMessageViewModel
                 {
                     From = MailProvider.SMTP_USER,
                     To = user.Email,

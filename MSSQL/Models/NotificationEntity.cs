@@ -24,7 +24,7 @@ namespace GotIt.MSSQL.Models
         public DateTime? Date { get; set; }
 
         [ForeignKey("Sender")]
-        public int SenderId { get; set; }
+        public int? SenderId { get; set; }
         public virtual UserEntity Sender { get; set; }
 
         [ForeignKey("Receiver")]

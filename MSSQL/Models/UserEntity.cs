@@ -13,7 +13,7 @@ namespace GotIt.MSSQL.Models
         public UserEntity()
         {
             Items = new HashSet<ItemEntity>();
-            Requests = new HashSet<RequestEntity>();
+            SentRequests = new HashSet<RequestEntity>();
             Comments = new HashSet<CommentEntity>();
             Feedbacks = new HashSet<FeedbackEntity>();
             Messages = new HashSet<MessageEntity>();
@@ -43,7 +43,8 @@ namespace GotIt.MSSQL.Models
         public EUserType Type { get; set; }
 
         public virtual ICollection<ItemEntity> Items { get; set; }
-        public virtual ICollection<RequestEntity> Requests { get; set; }
+        public virtual ICollection<RequestEntity> SentRequests { get; set; }
+        public virtual ICollection<RequestEntity> ReceivedRequests { get; set; }
         public virtual ICollection<CommentEntity> Comments { get; set; }
         public virtual ICollection<FeedbackEntity> Feedbacks { get; set; }
         public virtual ICollection<MessageEntity> Messages { get; set; }

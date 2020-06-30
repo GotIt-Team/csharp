@@ -22,16 +22,20 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var request = new RequestEntity {
-                    SendDate=DateTime.UtcNow,
-                    State=requestViewModel.State,
-                    ItemId=requestViewModel.Item.Id,
-                    UserId=requestViewModel.User.Id
+                var request = new RequestEntity
+                {
+                    SendDate = DateTime.UtcNow,
+                    Title = requestViewModel.Title,
+                    Content = requestViewModel.Content,
+                    State = ERequestState.Pending,
+                    ItemId = requestViewModel.Item.Id,
+                    SenderId = senderId,
+                    ReceiverId = requestViewModel.Receiver.Id
                 };
 
-                Add(request);
-                var result = SaveChanges();
-                if (!result)
+                var data = Add(request);
+
+                if (data == null || !SaveChanges())
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
@@ -44,14 +48,15 @@ namespace GotIt.BLL.Managers
                     {
                         Id = senderId
                     },
-                    Type = ENotificationType.Request
+                    Type = ENotificationType.Request,
+                    
                 };
                 
-                return _notificationManager.AddNotification(requestViewModel.User.Id, notification);
+                return _notificationManager.AddNotification(requestViewModel.Receiver.Id, notification);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<bool>(false,message: e.Message);
+                return ResultHelper.Failed<bool>(message: e.Message);
             }
         }
 
@@ -59,7 +64,12 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var request = Get(r => r.Id == requestViewModel.Id, "Item.User");
+                var request = Get(r => r.Id == requestViewModel.Id);
+                if(request == null)
+                {
+                    throw new Exception(EResultMessage.NotFound.ToString());
+                }
+
                 request.ReplyDate = DateTime.UtcNow;
                 request.State = requestViewModel.State;
                 request.ReplyMessage = requestViewModel.ReplyMessage;
@@ -82,11 +92,99 @@ namespace GotIt.BLL.Managers
                     Type = ENotificationType.Request,
                 };
 
-                return _notificationManager.AddNotification(request.Item.User.Id, notification);
+                return _notificationManager.AddNotification(request.SenderId, notification);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<bool>(false, message: e.Message);
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
+        internal Result<bool> DeleteRequest(int userId, int requestId, ERequestState state)
+        {
+            try
+            {
+                if(state == ERequestState.Approved)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                var request = new RequestEntity();
+                if (state == ERequestState.Pending)
+                {
+                    request = Get(r => r.Id == requestId);
+                }
+
+                DeleteById(requestId);
+                if (!SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                if(state == ERequestState.Rejected)
+                {
+                    return ResultHelper.Succeeded(true);
+                }
+
+                var notification = new NotificationViewModel
+                {
+                    Link = "link ",
+                    Content = " content ",
+                    Sender = new UserViewModel
+                    {
+                        Id = userId
+                    },
+                    Type = ENotificationType.Request,
+                };
+
+                return _notificationManager.AddNotification(request.ReceiverId, notification);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<bool>(message: e.Message);
+            }
+        }
+
+        public Result<List<RequestViewModel>> GetRequests(int userId, EUserType type, ERequestState? state)
+        {
+            try
+            {
+                var requests = GetAll(r => ((type == EUserType.regular && r.SenderId == userId) 
+                    || (type == EUserType.organization && r.ReceiverId == userId)) && r.State == (state ?? r.State),
+                    type == EUserType.regular ? "Receiver" : "Sender");
+                if(requests == null)
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                var result = requests.Select(r => new RequestViewModel
+                {
+                    Id = r.Id,
+                    Content = r.Content,
+                    Title = r.Title,
+                    SendDate = r.SendDate,
+                    State = r.State,
+                    ReplyDate = r.ReplyDate,
+                    ReplyMessage = r.ReplyMessage,
+                    Receiver = r.Receiver != null ? new UserViewModel
+                    {
+                        Id = r.Receiver.Id,
+                        Name = r.Receiver.Name,
+                        Picture = r.Receiver.Picture
+                    } : null,
+                    Sender = r.Sender != null ? new UserViewModel
+                    {
+                        Id = r.Sender.Id,
+                        Name = r.Sender.Name,
+                        Picture = r.Sender.Picture
+                    } : null
+                }).ToList();
+
+                return ResultHelper.Succeeded(result);
+            }
+            catch (Exception e)
+            {
+                return ResultHelper.Failed<List<RequestViewModel>>(message: e.Message);
             }
         }
     }

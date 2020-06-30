@@ -47,6 +47,14 @@ namespace GotIt.MSSQL
                 e.HasOne(p => p.Item)
                  .WithMany(p => p.Requests)
                  .OnDelete(DeleteBehavior.NoAction);
+
+                e.HasOne(p => p.Sender)
+                 .WithMany(p => p.SentRequests)
+                 .OnDelete(DeleteBehavior.NoAction);
+
+                e.HasOne(p => p.Receiver)
+                 .WithMany(p => p.ReceivedRequests)
+                 .OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<FeedbackEntity>(e =>
             {

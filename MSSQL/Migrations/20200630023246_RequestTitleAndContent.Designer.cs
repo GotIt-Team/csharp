@@ -4,14 +4,16 @@ using GotIt.MSSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GotIt.MSSQL.Migrations
 {
     [DbContext(typeof(GotItDbContext))]
-    partial class GotItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200630023246_RequestTitleAndContent")]
+    partial class RequestTitleAndContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -16,7 +16,7 @@ namespace GotIt.BLL.Managers
         public static readonly string SMTP_SERVER = "smtp.gmail.com";
         public static readonly int SMTP_PORT = 587;
 
-        public static async Task SendMailAsync(MailMessageViewModel message)
+        public static async Task SendAsync(MailMessageViewModel message)
         {
             try
             {
