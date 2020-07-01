@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GotIt.BLL.Managers;
+using GotIt.BLL.Providers;
 using GotIt.Common.Helper;
 using GotIt.Configuration;
 using GotIt.MSSQL;
@@ -32,7 +33,7 @@ namespace GotIt
         {
             services.AddCors();
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             #region Dependancy Injection
             services.AddScoped(typeof(RequestAttributes));
@@ -47,6 +48,9 @@ namespace GotIt
             services.AddScoped(typeof(UserManager));
             services.AddScoped(typeof(TokenManager));
             services.AddScoped(typeof(ProbablyMatchManager));
+
+            services.AddScoped(typeof(MailProvider));
+            services.AddScoped(typeof(HttpProvider));
 
             services.AddDbContext<GotItDbContext>(options =>
             {

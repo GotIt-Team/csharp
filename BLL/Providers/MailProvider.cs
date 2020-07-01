@@ -7,16 +7,16 @@ using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace GotIt.BLL.Managers
+namespace GotIt.BLL.Providers
 {
-    public static class MailProvider
+    public class MailProvider
     {
         public static readonly string SMTP_USER = "gotit.noreply@gmail.com";
         public static readonly string PASSWORD = "R290LUl0LTE5OTg=";
         public static readonly string SMTP_SERVER = "smtp.gmail.com";
         public static readonly int SMTP_PORT = 587;
 
-        public static async Task SendAsync(MailMessageViewModel message)
+        public async Task SendAsync(MailMessageViewModel message)
         {
             try
             {

@@ -14,14 +14,16 @@ using System.Net;
 using System.IO;
 using GotIt.Common.Enums;
 using Microsoft.AspNetCore.Http;
+using GotIt.BLL.Providers;
 
 namespace GotIt.BLL.Managers
 {
     public class SystemManager : Repository<FeedbackEntity>
     {
-
-        public SystemManager(GotItDbContext dbContext) : base(dbContext) 
+        private readonly MailProvider _mailProvider;
+        public SystemManager(GotItDbContext dbContext, MailProvider mailProvider) : base(dbContext) 
         {
+            _mailProvider = mailProvider;
         }
         
         public Result<bool> AddFeedback(int userId, FeedbackViewModel feedbackViewModel)
@@ -61,7 +63,7 @@ namespace GotIt.BLL.Managers
                 body = body.Replace("{user-id}", userId.ToString());
                 body = body.Replace("{user-message}", contactUs.Message);
                 
-                await MailProvider.SendAsync(new MailMessageViewModel
+                await _mailProvider.SendAsync(new MailMessageViewModel
                 {
                     From = contactUs.Email,
                     To = MailProvider.SMTP_USER,
@@ -87,7 +89,7 @@ namespace GotIt.BLL.Managers
                 {
                     byte[] fileData = null;
                     const int maxContentLength = 1024 * 1024 * 3; //Size = 3 MB  
-                    var allowedFileExtensions = new List<string> { "png", "jpg", "jpeg", "gif" };
+                    var allowedFileExtensions = new List<string> { "png", "jpg", "jpeg" };
                     var ext = file.FileName.Substring(file.FileName.LastIndexOf('.') + 1);
                     var extension = ext.ToLower();
                     if (!allowedFileExtensions.Contains(extension))

@@ -15,6 +15,7 @@ namespace GotIt.BLL.ViewModels
         public EItemType Type { get; set; }
         public string Embeddings { get; set; }
         public List<string> Images { get; set; }
+        public List<int[]> Boxes { get; set; }
         public Dictionary<EAttribute, string> Attributes { get; set; }
         public List<CommentViewModel> Comments { get; set; }
         public UserViewModel User { get; set; }

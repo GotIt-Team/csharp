@@ -42,9 +42,10 @@ namespace GotIt.Controllers
         }
 
         [HttpPost]
-        public Result<object> AddItem()
+        [Authrization(EUserType.regular)]
+        public Result<bool> AddItem([FromBody] ItemDetailsViewModel item)
         {
-            throw new NotImplementedException();
+            return _manager.AddItem(_requestAttributes.Id, item);
         }
 
         [HttpPut]

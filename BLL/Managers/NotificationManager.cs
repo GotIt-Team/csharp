@@ -77,7 +77,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<bool> AddNotification(int receiverId, NotificationViewModel notification)
+        public NotificationEntity AddNotification(int receiverId, NotificationViewModel notification)
         {
             try
             {
@@ -87,22 +87,16 @@ namespace GotIt.BLL.Managers
                     Content = notification.Content,
                     Link = notification.Link,
                     ReceiverId = receiverId,
-                    SenderId = notification.Sender.Id,
+                    SenderId = notification.Sender?.Id,
                     Type = notification.Type,
                     Date = DateTime.UtcNow
                 };
 
-                Add(model);
-                var result = SaveChanges();
-                if (!result)
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
-                return ResultHelper.Succeeded(result);
+                return Add(model);
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed(false, message: e.Message);
+                throw e;
             }
         }
     }

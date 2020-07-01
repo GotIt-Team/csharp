@@ -35,11 +35,6 @@ namespace GotIt.BLL.Managers
 
                 var data = Add(request);
 
-                if (data == null || !SaveChanges())
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
-
                 var notification = new NotificationViewModel
                 {
                     Link = "link ",
@@ -51,8 +46,13 @@ namespace GotIt.BLL.Managers
                     Type = ENotificationType.Request,
                     
                 };
-                
-                return _notificationManager.AddNotification(requestViewModel.Receiver.Id, notification);
+                var notificationResult = _notificationManager.AddNotification(requestViewModel.Receiver.Id, notification);
+
+                if (data == null || notificationResult == null || !SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                return ResultHelper.Succeeded(true);
             }
             catch (Exception e)
             {
@@ -75,11 +75,6 @@ namespace GotIt.BLL.Managers
                 request.ReplyMessage = requestViewModel.ReplyMessage;
 
                 Update(request);
-                var result = SaveChanges();
-                if (!result)
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
 
                 var notification = new NotificationViewModel
                 {
@@ -92,7 +87,12 @@ namespace GotIt.BLL.Managers
                     Type = ENotificationType.Request,
                 };
 
-                return _notificationManager.AddNotification(request.SenderId, notification);
+                var notificationResult = _notificationManager.AddNotification(request.SenderId, notification);
+                if (notificationResult == null || !SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+                return ResultHelper.Succeeded(true);
             }
             catch (Exception e)
             {
@@ -116,11 +116,7 @@ namespace GotIt.BLL.Managers
                 }
 
                 DeleteById(requestId);
-                if (!SaveChanges())
-                {
-                    throw new Exception(EResultMessage.DatabaseError.ToString());
-                }
-
+                
                 if(state == ERequestState.Rejected)
                 {
                     return ResultHelper.Succeeded(true);
@@ -137,7 +133,13 @@ namespace GotIt.BLL.Managers
                     Type = ENotificationType.Request,
                 };
 
-                return _notificationManager.AddNotification(request.ReceiverId, notification);
+                var notificationResult = _notificationManager.AddNotification(request.ReceiverId, notification);
+                if (notificationResult == null || !SaveChanges())
+                {
+                    throw new Exception(EResultMessage.DatabaseError.ToString());
+                }
+
+                return ResultHelper.Succeeded(true);
             }
             catch (Exception e)
             {

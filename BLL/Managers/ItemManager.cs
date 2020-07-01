@@ -1,9 +1,12 @@
-﻿using GotIt.BLL.ViewModels;
+﻿using GotIt.BLL.Providers;
+using GotIt.BLL.ViewModels;
 using GotIt.Common.Enums;
 using GotIt.Common.Helper;
 using GotIt.MSSQL;
 using GotIt.MSSQL.Models;
 using GotIt.MSSQL.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +19,14 @@ namespace GotIt.BLL.Managers
 {
     public class ItemManager : Repository<ItemEntity>
     {
-        private readonly ProbablyMatchManager _probablyMatchManager;
-        private readonly NotificationManager _notificationManager;
-        public ItemManager(GotItDbContext dbContext , ProbablyMatchManager probablyMatchManager , NotificationManager notificationManager) : base(dbContext) {
-            _probablyMatchManager = probablyMatchManager;
-            _notificationManager = notificationManager;
+        private readonly IServiceScopeFactory _services;
+        private readonly HttpProvider _httpProvider;
+        public ItemManager(GotItDbContext dbContext, 
+            IServiceScopeFactory services, 
+            HttpProvider httpProvider) : base(dbContext) 
+        {
+            _services = services;
+            _httpProvider = httpProvider;
         }
 
 
@@ -109,12 +115,22 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public async Task Match(ItemEntity item)
+        public async Task Match(ItemEntity item, ItemDetailsViewModel itemDetails)
         {
             try
             {
-                var data = GetAll(i => i.Type == item.Type && i.IsLost != item.IsLost);
-                data.Where(k =>
+                using IServiceScope scope = _services.CreateScope();
+                var _probablyMatchManager = scope.ServiceProvider.GetRequiredService<ProbablyMatchManager>();
+                var _notificationManager = scope.ServiceProvider.GetRequiredService<NotificationManager>();
+                var _itemManager = scope.ServiceProvider.GetRequiredService<ItemManager>();
+
+                var data = _itemManager.GetAll(i => i.Type == item.Type && i.IsLost != item.IsLost);
+                if (data == null)
+                {
+                    data = new List<ItemEntity>();
+                }
+
+                data = data.Where(k =>
                 {
                     if (item.Attributes.Count < k.Attributes.Count)
                     {
@@ -122,26 +138,41 @@ namespace GotIt.BLL.Managers
                     }
                     return k.Attributes.All(i => item.Attributes.Any(j => j.Key == i.Key && j.Value == i.Value));
                 }).ToList();
-                var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:54040/api/");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response = await client.PostAsJsonAsync(" ", data);
-                if (!response.IsSuccessStatusCode)
+
+                var requestData = new MatchRequestViewModel
                 {
-                    throw new Exception(response.StatusCode.ToString());
-                }
-                var result = await response.Content.ReadAsAsync<Result<MatchResultViewModel>>();
+                    Known = new KnownViewModel
+                    {
+                        Boxes = itemDetails.Boxes,
+                        Embeddings = item.Embeddings,
+                        Images = itemDetails.Images
+                    },
+                    Candidates = data.Select(i => new CandidateViewModel
+                    {
+                        Embeddings = i.Embeddings,
+                        ItemId = i.Id
+                    }).ToList()
+                };
+                var path = string.Format("{0}/match", item.Type.ToString().ToLower());
+
+                var result = await _httpProvider.SendRequest<MatchRequestViewModel, Result<MatchResultViewModel>>
+                    (_httpProvider.PythonUrl, path, requestData);
                 if (!result.IsSucceeded)
                 {
                     throw new Exception(result.Message);
                 }
+
                 item.Embeddings = result.Data.Embeddings;
-                Update(item, i => i.Embeddings);
-                if(result.Data.Scores.Count==0)
+                _itemManager.Update(item, i => i.Embeddings);
+                if (result.Data.Scores.Count == 0)
                 {
+                    if (!_itemManager.SaveChanges())
+                    {
+                        throw new Exception(EResultMessage.DatabaseError.ToString());
+                    }
                     return;
                 }
+
                 var propMatch = result.Data.Scores.Select(i => new ProbablyMatchEntity
                 {
                     ItemId = item.Id,
@@ -149,22 +180,23 @@ namespace GotIt.BLL.Managers
                     Score = i.Score
                 }).ToList();
                 _probablyMatchManager.Add(propMatch);
-                _notificationManager.AddNotification(item.UserId, new NotificationViewModel
+
+                var notification = _notificationManager.AddNotification(item.UserId, new NotificationViewModel
                 {
                     Content = "matched item",
                     Link = "",
                     Type = ENotificationType.Match
-                }) ;
-                var _result = SaveChanges();
-                if (!_result)
+                });
+
+                if (notification == null || !_itemManager.SaveChanges())
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
+                return;
             }
-            catch(Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.Message);
-                return ;
+                return;
             }
             
         }
@@ -226,7 +258,7 @@ namespace GotIt.BLL.Managers
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
-                Task.Run(() => Match(data));
+                Task.Run(() => Match(data, item));
                 return ResultHelper.Succeeded(true);
             }
             catch (Exception e)

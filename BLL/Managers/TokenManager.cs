@@ -84,7 +84,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public TokenViewModel GenerateUserToken(UserEntity user)
+        public UserViewModel GenerateUserToken(UserEntity user)
         {
             try
             {
@@ -120,14 +120,15 @@ namespace GotIt.BLL.Managers
                 );
 
                 // result
-                return new TokenViewModel
+                return new UserViewModel
                 {
                     Id = user.Id,
                     Name = user.Name,
                     Picture = user.Picture,
                     Address = user.Address,
                     PhoneNumber = user.PhoneNumber,
-                    Token = new JwtSecurityTokenHandler().WriteToken(token)
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Type = user.Type
                 };
             }
             // any un excpected error happened

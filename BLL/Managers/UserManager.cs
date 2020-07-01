@@ -1,4 +1,5 @@
-﻿using GotIt.BLL.ViewModels;
+﻿using GotIt.BLL.Providers;
+using GotIt.BLL.ViewModels;
 using GotIt.Common.Enums;
 using GotIt.Common.Exceptions;
 using GotIt.Common.Helper;
@@ -15,12 +16,14 @@ namespace GotIt.BLL.Managers
     {
         private readonly TokenManager _tokenManager;
         private readonly RequestAttributes _requestAttributes;
-        
+        private readonly MailProvider _mailProvider;
+
         public UserManager(GotItDbContext dbContext, RequestAttributes requestAttributes, 
-            TokenManager tokenManager) : base(dbContext)
+            TokenManager tokenManager, MailProvider mailProvider) : base(dbContext)
         {
             _requestAttributes = requestAttributes;
             _tokenManager = tokenManager;
+            _mailProvider = mailProvider;
         }
 
         public async Task<Result<bool>> AddUser(RegisterationViewModel userViewModel)
@@ -75,7 +78,7 @@ namespace GotIt.BLL.Managers
                 body = body.Replace("{user-token}", token);
 
 
-                await MailProvider.SendAsync(new MailMessageViewModel
+                await _mailProvider.SendAsync(new MailMessageViewModel
                 {
                     From = MailProvider.SMTP_USER,
                     To = user.Email,
@@ -163,7 +166,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        public Result<TokenViewModel> Login(LoginViewModel user)
+        public Result<UserViewModel> Login(LoginViewModel user)
         {
             try
             {
@@ -187,7 +190,7 @@ namespace GotIt.BLL.Managers
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<TokenViewModel>(message: e.Message);
+                return ResultHelper.Failed<UserViewModel>(message: e.Message);
             }
         }
 

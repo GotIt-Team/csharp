@@ -32,7 +32,7 @@ namespace GotIt.Controllers
 
         [HttpPost]
         [Route("sign-in")]
-        public Result<TokenViewModel> Login([FromBody] LoginViewModel user)
+        public Result<UserViewModel> Login([FromBody] LoginViewModel user)
         {
             return _manager.Login(user);
         }
