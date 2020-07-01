@@ -25,7 +25,7 @@ namespace GotIt.BLL.Providers
                 {
                     return "http://localhost:5000/api/";
                 }
-                return "";
+                return "https://ai-got-it.azurewebsites.net/";
             }
         }
 

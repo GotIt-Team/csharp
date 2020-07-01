@@ -55,7 +55,7 @@ namespace GotIt
             services.AddDbContext<GotItDbContext>(options =>
             {
                 options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug()));
-                options.UseSqlServer(Configuration["ConnectionStrings:Local"]);
+                options.UseSqlServer(Configuration["ConnectionStrings:Production"]);
             });
             #endregion
 
