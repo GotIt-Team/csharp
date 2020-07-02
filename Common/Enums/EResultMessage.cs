@@ -26,6 +26,7 @@ namespace GotIt.Common.Enums
         NotUserType = 16,
         WrongPassword = 17,
         InvalidExtension = 18,
-        ExceedMaxContent = 19
+        ExceedMaxContent = 19,
+        RegistrationDone = 20,
     }
 }

@@ -87,7 +87,7 @@ namespace GotIt.BLL.Managers
                     Subject = "Confirm your account on Got It"
                 });
 
-                return ResultHelper.Succeeded(true);
+                return ResultHelper.Succeeded(true, message: EResultMessage.RegistrationDone.ToString());
             }
             catch (DuplicateDataException)
             {

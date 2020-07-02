@@ -34,12 +34,12 @@ namespace GotIt.BLL.Managers
                     Link = n.Link,
                     Type = n.Type,
                     Date = n.Date,
-                    Sender = new UserViewModel
+                    Sender = n.Sender != null ? new UserViewModel
                     {
                         Id = n.Sender.Id,
                         Name = n.Sender.Name,
                         Picture = n.Sender.Picture
-                    }
+                    } : null
                 }).ToList();
 
                 return ResultHelper.Succeeded(result, notifications.Count);
