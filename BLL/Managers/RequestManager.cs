@@ -100,7 +100,7 @@ namespace GotIt.BLL.Managers
             }
         }
 
-        internal Result<bool> DeleteRequest(int userId, int requestId, ERequestState state)
+        public Result<bool> DeleteRequest(int userId, int requestId, ERequestState state)
         {
             try
             {

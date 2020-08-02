@@ -19,16 +19,21 @@ namespace GotIt.Controllers
         private readonly ItemManager _manager;
         private readonly RequestAttributes _requestAttributes;
         private readonly RequestManager _requestManager;
-        public ItemController(RequestAttributes requestAttributes, ItemManager manager, RequestManager requestManager)
+        private readonly CommentManager _commentManager;
+        public ItemController(RequestAttributes requestAttributes, 
+            ItemManager manager, 
+            RequestManager requestManager,
+            CommentManager commentManager)
         {
             _requestAttributes = requestAttributes;
             _manager = manager;
             _requestManager = requestManager;
+            _commentManager = commentManager;
         }
 
         [HttpGet]
         [Authrization(EUserType.regular, EUserType.organization)]
-        public Result<List<ItemViewModel>> GetItems([FromQuery] int pageNo, [FromQuery] int pageSize)
+        public Result<List<ItemDetailsViewModel>> GetItems([FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _manager.GetItems(null, true, pageNo, pageSize);
         }
@@ -78,6 +83,14 @@ namespace GotIt.Controllers
         public Result<bool> ReplyRequest([FromBody]RequestViewModel request)
         {
             return _requestManager.ReplyRequest(_requestAttributes.Id, request);
+        }
+
+        [HttpGet]
+        [Route("{id}/comments")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<List<CommentViewModel>> GetItemComments([FromRoute] int id, [FromQuery] int pageNo, [FromQuery] int pageSize)
+        {
+            return _commentManager.GetItemComments(id, pageNo, pageSize);
         }
     }
 }

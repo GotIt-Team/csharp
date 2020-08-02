@@ -78,7 +78,7 @@ namespace GotIt.Controllers
         [HttpGet]
         [Route("items")]
         [Authrization(EUserType.regular, EUserType.organization)]
-        public Result<List<ItemViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
+        public Result<List<ItemDetailsViewModel>> LostItems([FromQuery] bool isLost, [FromQuery] int pageNo, [FromQuery] int pageSize)
         {
             return _itemManager.GetItems(_requestAttributes.Id, isLost, pageNo, pageSize);
         }

@@ -27,7 +27,7 @@ namespace GotIt.Configuration
         }
         private void BeforExecution(HttpContext httpContext)
         {
-            _requestAttributes.AppBaseUrl = String.Format("{0}://{1}", httpContext.Request.Scheme, httpContext.Request.Host.Value);
+            _requestAttributes.AppBaseUrl = String.Format("{0}://{1}", httpContext.Request.IsHttps ? "https" : "http", httpContext.Request.Host.Value);
         }
     }
 }

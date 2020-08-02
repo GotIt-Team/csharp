@@ -30,25 +30,26 @@ namespace GotIt.BLL.Managers
         }
 
 
-        public Result<List<ItemViewModel>> GetItems(int? userId, bool isLost, int pageNo, int pageSize)
+        public Result<List<ItemDetailsViewModel>> GetItems(int? userId, bool isLost, int pageNo, int pageSize)
         {
             try
             {
                 var items = GetAllPaginated(i => i.UserId == (userId ?? i.UserId) && i.IsLost == isLost && i.MatchDate == null, pageNo, pageSize,
-                    "Images", "User");
+                    "Images", "Attributes", "User");
                 
                 if (items.Data == null)
                 {
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
-                var result = items.Data.Select(i => new ItemViewModel
+                var result = items.Data.Select(i => new ItemDetailsViewModel
                 {
                     Id = i.Id,
                     Content = i.Content,
                     CreationDate = i.CreationDate,
                     Type = i.Type,
-                    Image = i.Images.FirstOrDefault()?.Image,
+                    Attributes = i.Attributes.ToDictionary(i => i.Key, i => i.Value),
+                    Images = i.Images.Select(i => i.Image).ToList(),
                     User = new UserViewModel
                     {
                         Name = i.User.Name,
@@ -60,7 +61,7 @@ namespace GotIt.BLL.Managers
             }
             catch (Exception e)
             {
-                return ResultHelper.Failed<List<ItemViewModel>>(message: e.Message);
+                return ResultHelper.Failed<List<ItemDetailsViewModel>>(message: e.Message);
             }
         }
 
@@ -68,7 +69,7 @@ namespace GotIt.BLL.Managers
         {
             try
             {
-                var item = Get(i => i.Id == id, "Images", "Attributes", "User", "Comments.User");
+                var item = Get(i => i.Id == id, "Images", "Attributes", "User");
 
                 if (item == null)
                 {
@@ -90,21 +91,10 @@ namespace GotIt.BLL.Managers
                     {
                         Id = item.Id,
                         Name = item.User.Name,
-                        Picture = item.User.Picture
+                        Picture = item.User.Picture,
+                        Address = item.User.Address,
+                        PhoneNumber = item.User.PhoneNumber
                     },
-                    
-                    Comments = item.Comments.Select(i => new CommentViewModel
-                    {
-                        Id = i.Id,
-                        Date = i.Date,
-                        Content = i.Content,
-                        User = new UserViewModel
-                        {
-                            Id = i.User.Id,
-                            Name = i.User.Name,
-                            Picture = i.User.Picture
-                        }
-                    }).ToList()
                 };
 
                 return ResultHelper.Succeeded(result);
@@ -175,8 +165,8 @@ namespace GotIt.BLL.Managers
 
                 var propMatch = result.Data.Scores.Select(i => new ProbablyMatchEntity
                 {
-                    ItemId = item.Id,
-                    MatchedItemId = i.ItemId,
+                    ItemId = item.IsLost ? item.Id : i.ItemId,
+                    MatchedItemId = item.IsLost ? i.ItemId : item.Id,
                     Score = i.Score
                 }).ToList();
                 _probablyMatchManager.Add(propMatch);
@@ -238,7 +228,7 @@ namespace GotIt.BLL.Managers
                     Id = item.Id,
                     Content = item.Content,
                     IsLost = item.IsLost,
-                    CreationDate = item.CreationDate,
+                    CreationDate = DateTime.UtcNow,
                     Type = item.Type,
                     Embeddings = item.Embeddings,
                     Attributes = item.Attributes.Select(i => new ItemAttributeEntity
