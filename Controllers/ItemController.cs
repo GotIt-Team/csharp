@@ -92,5 +92,13 @@ namespace GotIt.Controllers
         {
             return _commentManager.GetItemComments(id, pageNo, pageSize);
         }
+
+        [HttpPost]
+        [Route("{id}/comment")]
+        [Authrization(EUserType.regular, EUserType.organization)]
+        public Result<int> AddComment([FromRoute] int id ,[FromBody] CommentViewModel comment)
+        {
+            return _commentManager.AddComment(_requestAttributes.Id,id,comment);
+        }
     }
 }
