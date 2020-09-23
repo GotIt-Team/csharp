@@ -127,7 +127,7 @@ namespace GotIt.BLL.Managers
                     throw new Exception(EResultMessage.DatabaseError.ToString());
                 }
 
-                return ResultHelper.Succeeded(true);
+                return ResultHelper.Succeeded(true, message: EResultMessage.RegistrationDone.ToString());
             }
             catch (Exception e)
             {
